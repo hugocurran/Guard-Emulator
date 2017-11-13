@@ -9,7 +9,7 @@ namespace UnitTests
 
 
         [TestMethod]
-        public void TestCreation()
+        public void TestInternalMessageCreation()
         {
             internalMessage imesg = new internalMessage();
             imesg.type = messageType.ObjectUpdate;

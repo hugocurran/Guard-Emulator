@@ -24,6 +24,6 @@ namespace Guard_Emulator
         public string entityID { get; set; }
         public string objectName { get; set; }
         public List<string> attribute { get { return _attribs; } }
-        public string inetractionName { get; set; }
+        public string interactionName { get; set; }
     }
 }

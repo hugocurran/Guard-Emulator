@@ -6,6 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.4.1" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.4.0" />
     <PackageReference Include="NetMQ" Version="4.0.0.1" />
   </ItemGroup>
 
