@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Guard Emulator\Guard Emulator.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Sample test data\" />
+  </ItemGroup>
+
 </Project>

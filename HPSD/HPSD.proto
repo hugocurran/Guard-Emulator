@@ -1,0 +1,70 @@
+//
+// HLA Protocol for Security Devices v0.81, 2017-11-14
+//
+// Copyright Pitch Technologies AB, Sweden 2016-2017
+//
+
+syntax = "proto2";
+
+//option java_package = "se.pitch.ral.impl.clearText.message.protobuf";
+
+message HpsdMessage {
+    enum MessageType {
+        SESSION_STATUS  = 1;
+        OBJECT_CREATE   = 2;
+        OBJECT_UPDATE   = 3;
+        OBJECT_DELETE   = 4;
+        INTERACTION     = 5;
+    }
+
+    required int32 protocol_version     = 1; // Must be set to 81 for version 0.81
+    required int32 sequence_number      = 2;
+    required int64 timestamp            = 3; // Milliseconds [ms] of UTC time since Unix epoch, 1970-01-01 00:00:00 UTC
+    required MessageType message_type   = 4; // The corresponding message type below must be valid
+
+    optional SessionStatus session_status   = 5;
+    optional ObjectCreate object_create     = 6;
+    optional ObjectUpdate object_update     = 7;
+    optional ObjectDelete object_delete     = 8;
+    optional Interaction interaction        = 9;
+}
+
+message SessionStatus {
+    required bool active            = 1;
+    optional string session_name    = 2;
+}
+
+// NamedValue, not used directly
+message NamedValue {
+    required string name    = 1;
+    required bytes value    = 2;
+}
+
+message ObjectCreate {
+    required string producing_federate      = 1;
+    required string object_class_name       = 2;
+    required string instance_id             = 3;
+    required string instance_name           = 4;
+}
+
+message ObjectUpdate {
+    required string producing_federate      = 1;
+    required string object_class_name       = 2;
+    required string instance_id             = 3;
+    repeated NamedValue attributes          = 4;
+    optional bytes user_supplied_tag        = 5;
+}
+
+message ObjectDelete {
+    required string producing_federate  = 1;
+    required string object_class_name   = 2;
+    required string instance_id         = 3;
+    optional bytes user_supplied_tag    = 4;
+}
+
+message Interaction {
+    required string producing_federate      = 1;
+    required string interaction_class_name  = 2;
+    repeated NamedValue parameters          = 3;
+    optional bytes user_supplied_tag        = 4;
+}

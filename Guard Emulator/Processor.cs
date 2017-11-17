@@ -12,13 +12,6 @@ namespace Guard_Emulator
 {
     public class Processor
     {
-        /*
-        static void Main(string[] args)
-        {
-            string subscribe = args[0];
-            string publish = args[1];
-            XDocument policy args[2];
-            */
 
         public Processor(string subscribe, string publish, CancellationToken token)
         {
@@ -33,11 +26,11 @@ namespace Guard_Emulator
                 subSocket.Options.ReceiveHighWatermark = 1000;
                 subSocket.Bind("tcp://" + subscribe);
                 subSocket.SubscribeToAnyTopic();
-                Console.WriteLine("Subscriber socket binding...");
+                //Console.WriteLine("Subscriber socket binding...");
 
                 pubSocket.Options.SendHighWatermark = 1000;
                 pubSocket.Connect("tcp://" + publish);
-                Console.WriteLine("Publisher socket connecting...");
+                //Console.WriteLine("Publisher socket connecting...");
 
                 // Start monitoring the cancellation token
                 poller.RunAsync();
@@ -46,7 +39,7 @@ namespace Guard_Emulator
                 while (true)
                 {
                     message = subSocket.ReceiveFrameBytes();
-                    Console.WriteLine("Got one: {0}", System.Text.Encoding.ASCII.GetString(message));
+                    //Console.WriteLine("Got one: {0}", System.Text.Encoding.ASCII.GetString(message));
 
                     // Do some message checking
                     pubSocket.SendFrame(message);

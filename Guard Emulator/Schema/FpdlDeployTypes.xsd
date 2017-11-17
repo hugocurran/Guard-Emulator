@@ -31,11 +31,6 @@
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:attribute>
-							<xs:attribute name="designReference" type="fpdl:gatewayReferencePattern" use="required">
-								<xs:annotation>
-									<xs:documentation>Reference to federate design</xs:documentation>
-								</xs:annotation>
-							</xs:attribute>
 						</xs:extension>
 					</xs:complexContent>
 				</xs:complexType>
@@ -108,22 +103,35 @@
 					<xs:documentation>Host configuration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="export" type="fpdl:exportDeployType" minOccurs="0" maxOccurs="unbounded">
+			<xs:element name="export" type="fpdl:exportDeployType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Export policy</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="import" type="fpdl:importDeployType" minOccurs="0">
+			<xs:element name="import" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Import policy</xs:documentation>
 				</xs:annotation>
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="fpdl:importDeployType">
+							<xs:sequence>
+								<xs:element name="interfaceName" type="xs:string">
+									<xs:annotation>
+										<xs:documentation>Interface binding for the policy</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
 			</xs:element>
 			<xs:element name="filter" type="fpdl:filterDeployType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Filter configuration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="osp" type="fpdl:ospDeployType" minOccurs="0"/>
+			<xs:element name="osp" type="fpdl:ospDeployType" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:all>
 	</xs:complexType>
 	<xs:complexType name="filterDeployType">
@@ -383,29 +391,14 @@
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="exportDeployType">
-		<xs:complexContent>
-			<xs:extension base="fpdl:publishType">
-				<xs:sequence>
-					<xs:element name="interfaceName" type="xs:string">
-						<xs:annotation>
-							<xs:documentation>Interface binding for the policy</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element name="source" type="fpdl:subscribeType" maxOccurs="unbounded"/>
+			<xs:element name="interfaceName" type="xs:string"/>
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="importDeployType">
 		<xs:complexContent>
-			<xs:extension base="fpdl:subscribeType">
-				<xs:sequence>
-					<xs:element name="interfaceName" type="xs:string">
-						<xs:annotation>
-							<xs:documentation>Interface binding for the policy</xs:documentation>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
+			<xs:extension base="fpdl:publishType"/>
 		</xs:complexContent>
 	</xs:complexType>
 	<!-- Filter Paramaters specification -->
@@ -423,8 +416,8 @@
 			<xs:simpleContent>
 				<xs:extension base="fpdl:entityIdPattern">
 					<xs:attributeGroup ref="fpdl:parametersGroup"/>
-					<xs:assert test="@description=entityID"/>
 				</xs:extension>
+				<!--<xs:assert test="@description=entityID"/>-->
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>

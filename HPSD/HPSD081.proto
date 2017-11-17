@@ -1,0 +1,72 @@
+//
+// HLA Protocol for Security Devices v0.81, 2017-11-14
+//
+// Copyright Pitch Technologies AB, Sweden 2016-2017
+//
+
+syntax = "proto3";
+option csharp_namespace = "Guard_Emulator";
+
+//option java_package = "se.pitch.ral.impl.clearText.message.protobuf";
+
+message HpsdMessage {
+    enum MessageType {
+		EMPTY			= 0;
+        SESSION_STATUS  = 1;
+        OBJECT_CREATE   = 2;
+        OBJECT_UPDATE   = 3;
+        OBJECT_DELETE   = 4;
+        INTERACTION     = 5;
+    }
+
+    int32 protocol_version     = 1; // Must be set to 81 for version 0.81
+    int32 sequence_number      = 2; // Required
+    int64 timestamp            = 3; // Milliseconds [ms] of UTC time since Unix epoch, 1970-01-01 00:00:00 UTC
+    MessageType message_type   = 4; // The corresponding message type below must be valid
+
+    SessionStatus session_status   = 5; // Optional
+    ObjectCreate object_create     = 6; // Optional
+    ObjectUpdate object_update     = 7; // Optional
+    ObjectDelete object_delete     = 8; // Optional
+    Interaction interaction        = 9; // Optional
+}
+
+message SessionStatus {
+    bool active            = 1; // Required
+    string session_name    = 2; // Optional
+}
+
+// NamedValue, not used directly
+message NamedValue {
+    string name    = 1;
+    bytes value    = 2;
+}
+
+message ObjectCreate {
+    string producing_federate      = 1; // Required
+    string object_class_name       = 2; // Required
+    string instance_id             = 3; // Required
+    string instance_name           = 4; // Required
+}
+
+message ObjectUpdate {
+    string producing_federate      = 1; // Required
+    string object_class_name       = 2; // Required
+    string instance_id             = 3; // Required
+    repeated NamedValue attributes          = 4; // Required
+    bytes user_supplied_tag        = 5; // Optional
+}
+
+message ObjectDelete {
+    string producing_federate  = 1; // Required
+    string object_class_name   = 2; // Required
+    string instance_id         = 3; // Required
+    bytes user_supplied_tag    = 4; // Optional
+}
+
+message Interaction {
+    string producing_federate      = 1; // Required
+    string interaction_class_name  = 2; // Required
+    NamedValue parameters          = 3; // Required
+    bytes user_supplied_tag        = 4; // Optional
+}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd">
+	<configMgmt>
+		<securityOwner>UK</securityOwner>
+		<securityClassification>Official</securityClassification>
+		<currentVersion>1.0</currentVersion>
+		<description>Test deployment doc for Guard Emulator</description>
+		<created>
+			<date>2017-11-13</date>
+			<author>PC</author>
+			<initialVersion>1.0</initialVersion>
+		</created>
+		<docReference>52769B0B-A240-45E2-972C-ED3B6307F71D</docReference>
+	</configMgmt>
+	<designDocReference>C2056C70-A628-490E-B59B-3946EE89DFC3</designDocReference>
+	<system systemType="Gateway">
+		<pattern>HTG</pattern>
+		<component componentID="ED425374-5626-4773-8D5E-C2EBE683F632" componentType="guard">
+			<interface>
+				<interfaceName>HighNetwork</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>LowNetwork</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<osp>
+				<interfaceName>HighNetwork</interfaceName>
+				<exportSocketPort>5556</exportSocketPort>
+				<importSocketPort>5555</importSocketPort>
+			</osp>
+			<osp>
+				<interfaceName>LowNetwork</interfaceName>
+				<exportSocketPort>5558</exportSocketPort>
+				<importSocketPort>5557</importSocketPort>
+			</osp>
+			<export>
+				<source>
+					<federateSource>BlueForce CGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<source>
+					<entitySource>69fd9246-b475-4dd7-bbfe-ffd1b5b468bc</entitySource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<interfaceName>HighNetwork</interfaceName>
+			</export>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string">Name</attributeName>
+					<attributeName dataType="string">Size</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string">Type</attributeName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+				</interaction>
+				<interfaceName>LowNetwork</interfaceName>
+			</import>
+		</component>
+	</system>
+</Deploy>

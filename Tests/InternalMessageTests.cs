@@ -11,20 +11,20 @@ namespace UnitTests
         [TestMethod]
         public void TestInternalMessageCreation()
         {
-            internalMessage imesg = new internalMessage();
-            imesg.type = messageType.ObjectUpdate;
-            imesg.federate = "foo";
-            imesg.entityID = "bar";
-            imesg.objectName = "some.object";
-            imesg.attribute.Add("attrib1");
-            imesg.attribute.Add("attrib2");
+            InternalMessage imesg = new InternalMessage();
+            imesg.Type = MessageType.ObjectUpdate;
+            imesg.Federate = "foo";
+            imesg.EntityID = "bar";
+            imesg.ObjectName = "some.object";
+            imesg.Attribute.Add("attrib1");
+            imesg.Attribute.Add("attrib2");
 
-            Assert.AreEqual(messageType.ObjectUpdate, imesg.type);
-            Assert.AreEqual("foo", imesg.federate);
-            Assert.AreEqual("bar", imesg.entityID);
-            Assert.AreEqual("some.object", imesg.objectName);
-            Assert.AreEqual("attrib1", imesg.attribute[0]);
-            Assert.AreEqual("attrib2", imesg.attribute[1]);
+            Assert.AreEqual(MessageType.ObjectUpdate, imesg.Type);
+            Assert.AreEqual("foo", imesg.Federate);
+            Assert.AreEqual("bar", imesg.EntityID);
+            Assert.AreEqual("some.object", imesg.ObjectName);
+            Assert.AreEqual("attrib1", imesg.Attribute[0]);
+            Assert.AreEqual("attrib2", imesg.Attribute[1]);
         }
     }
 }
