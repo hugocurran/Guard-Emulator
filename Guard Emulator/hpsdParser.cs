@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Guard_Emulator
 {
-    public class HpsdParser
+    public static class HpsdParser
     {
         public static InternalMessage ParseMessage(HpsdMessage message)
         {

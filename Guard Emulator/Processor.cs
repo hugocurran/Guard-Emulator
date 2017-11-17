@@ -7,13 +7,20 @@ using System.Threading.Tasks;
 using NetMQ;
 using NetMQ.Sockets;
 using System.Threading;
+using Google.Protobuf;
 
 namespace Guard_Emulator
 {
+    public enum OspProtocol
+    {
+        HPSD,
+        WebLVC
+    }
+
     public class Processor
     {
 
-        public Processor(string subscribe, string publish, CancellationToken token)
+        public Processor(string subscribe, string publish, OspProtocol osp, CancellationToken token)
         {
             // Create a timer to check for task cancellation
             var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));
@@ -35,50 +42,69 @@ namespace Guard_Emulator
                 // Start monitoring the cancellation token
                 poller.RunAsync();
 
+                InternalMessage iMesg = null;
                 byte[] message = null;
                 while (true)
                 {
                     message = subSocket.ReceiveFrameBytes();
                     //Console.WriteLine("Got one: {0}", System.Text.Encoding.ASCII.GetString(message));
 
-                    // Do some message checking
-                    pubSocket.SendFrame(message);
+                    switch (osp)
+                    {
+                        case OspProtocol.HPSD:
+                            //Console.WriteLine("About to Parse message ");
+                            iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
+                            //Console.WriteLine("Parsed message: Sequence = {0}", iMesg.SequenceNumber);
+                            break;
+
+                        case OspProtocol.WebLVC:
+                            iMesg = WeblvcParser.ParseMessage(message);
+                            break;
+                    }
+
+                    if (applyPolicy(iMesg))
+                    {
+                        pubSocket.SendFrame(message);
+                        // Log an event message
+                    }
+                    else
+                    {
+                        // Log an error message
+                        continue;
+                    }
                 }
             }
         }
 
-        /// <summary>
-        /// Parse a HPSD message and return a standardised internal message
-        /// </summary>
-        /// <param name="message">HPSD message</param>
-        /// <returns>Standardised internal message</returns>
-        //InternalMessage hpsdParser(byte[] message)
-        //{
-        //    return new objectUpdateMessage();
-        //}
 
         /// <summary>
         /// Test the message against the policy
         /// </summary>
         /// <param name="message">message in standardised internal format</param>
         /// <returns>True if message permitted, else False</returns>
-        //bool applyPolicy(InternalMessage intMessage)
-        //{
-        // Phase 1: check the message against federates
+        bool applyPolicy(InternalMessage intMessage)
+        {
+            // Phase 0: filter out heartbeats etc.
+            if (intMessage.Type == MessageType.Status)
+            {
+                return true;
+            }
+
+            // Phase 1: check the message against federates
 
 
-        // Phase 2: check the message against entities
+            // Phase 2: check the message against entities
 
 
-        // Phase 3a: check the message against object names
+            // Phase 3a: check the message against object names
 
 
-        // Phase 3b: check the message against interaction names
+            // Phase 3b: check the message against interaction names
 
 
-        // Phase 4: check the message against attribute names
+            // Phase 4: check the message against attribute names
 
-        //  return true;
-        //}
+          return true;
+        }
     }
 }

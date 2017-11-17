@@ -7,6 +7,7 @@ using NetMQ.Sockets;
 using System.Threading.Tasks;
 using System.Threading;
 using Guard_Emulator;
+using Google.Protobuf;
 
 namespace UnitTests
 {
@@ -25,9 +26,12 @@ namespace UnitTests
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
+            OspProtocol protocol = OspProtocol.HPSD;
+
+            // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
-                var processorObj = new Processor(subscriber, publisher, token);
+                var processorObj = new Processor(subscriber, publisher, protocol, token);
             }, token);
 
             // Wait for processor thread to stabilise
@@ -47,19 +51,20 @@ namespace UnitTests
                 pubSocket.Connect("tcp://" + subscriber);
 
                 // Send starter
-                pubSocket.SendFrame(Encoding.ASCII.GetBytes("Starter 1"));
-                //pubSocket.SendFrame(Encoding.ASCII.GetBytes("Starter 2"));
+                pubSocket.SendFrame(statusMessage(0).ToByteArray());
+                // pubSocket.SendFrame(statusMessage(1).ToByteArray());
+
                 // Wait for the zmq connections to stabilise
                 Thread.Sleep(50);
-
-                int counter = 0;
+                
+                int counter = 1;
                 int received = 0;
                 int missed = 0;
                 byte[] message = null;
                 TimeSpan timeout = new TimeSpan(1000000);    // 10 msec
                 while (counter < 25)
                 {
-                    testData = System.Text.Encoding.ASCII.GetBytes("Hello World! " + counter.ToString());
+                    testData = statusMessage(counter).ToByteArray();
                     pubSocket.SendFrame(testData);
                     counter++;
                     //Thread.Sleep(60);
@@ -75,20 +80,42 @@ namespace UnitTests
                     }
                 }
                 // We expect to lose the first message!
-                Assert.IsTrue((received == 24) && (missed == 1));
+                Assert.IsTrue((received == 23) && (missed == 1));
 
                 // Tidy up by cancelling the Processor task
                 try
                 {
                     tokenSource.Cancel();
                 }
-                catch(OperationCanceledException) {}
+                catch (OperationCanceledException) { }
                 finally
                 {
                     tokenSource.Dispose();
                 }
             }
+        }
+
+        static HpsdMessage statusMessage(int sequence)
+        {
+            // Create an HPSD Status message for testing
+            long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
+            HpsdMessage statusMessage = new HpsdMessage()
+            {
+                ProtocolVersion = 81,
+                SequenceNumber = sequence,
+                Timestamp = timeStamp,
+                MessageType = HpsdMessage.Types.MessageType.SessionStatus,
+                SessionStatus = new SessionStatus()
+                {
+                    Active = true,
+                    SessionName = "ThisSession"
+                }
+            };
+            return statusMessage;
+        }
 
         }
     }
-}
+

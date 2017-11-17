@@ -22,14 +22,15 @@ namespace Guard_Emulator
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
+            OspProtocol protocol = OspProtocol.HPSD;
             var exportTask = Task.Run(() =>
             {
-                var exportObj = new Processor(exportSub, exportPub, token);
+                var exportObj = new Processor(exportSub, exportPub, protocol, token);
             }, token);
 
             var importTask = Task.Run(() =>
             {
-                var importObj = new Processor(importSub, importPub, token);
+                var importObj = new Processor(importSub, importPub, protocol, token);
             }, token);
 
             Task.WaitAll();
