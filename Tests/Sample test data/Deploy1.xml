@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd">
+<Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!---><Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd"> -->
 	<configMgmt>
 		<securityOwner>UK</securityOwner>
 		<securityClassification>Official</securityClassification>
@@ -24,15 +25,17 @@
 				<interfaceName>LowNetwork</interfaceName>
 				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
 			</interface>
-			<osp>
+			<osp protocol="HPSD">
 				<interfaceName>HighNetwork</interfaceName>
-				<exportSocketPort>5556</exportSocketPort>
-				<importSocketPort>5555</importSocketPort>
+        <path>ExportPath</path>
+				<inputSocketPort>5556</inputSocketPort>
+				<outputSocketPort>5555</outputSocketPort>
 			</osp>
-			<osp>
+			<osp protocol="HPSD">
 				<interfaceName>LowNetwork</interfaceName>
-				<exportSocketPort>5558</exportSocketPort>
-				<importSocketPort>5557</importSocketPort>
+        <path>ImportPath</path>
+				<inputSocketPort>5558</inputSocketPort>
+				<outputSocketPort>5557</outputSocketPort>
 			</osp>
 			<export>
 				<source>

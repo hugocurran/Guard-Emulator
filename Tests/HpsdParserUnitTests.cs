@@ -165,7 +165,7 @@ namespace UnitTests
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
-            string instanceId = "388AED46-4033-49C5-BA0D-8B6F8865D8C1";
+            //string instanceId = "388AED46-4033-49C5-BA0D-8B6F8865D8C1";
 
             /*
             List<NamedValue> parameters = new List<NamedValue>();

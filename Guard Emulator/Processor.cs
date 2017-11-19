@@ -20,7 +20,7 @@ namespace Guard_Emulator
     public class Processor
     {
 
-        public Processor(string subscribe, string publish, OspProtocol osp, CancellationToken token)
+        public Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
         {
             // Create a timer to check for task cancellation
             var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));

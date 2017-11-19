@@ -7,6 +7,7 @@ namespace UnitTests
     [TestClass]
     public class fpdlParserUnitTests
     {
+        #region schema tests
         /*
         string fpdlSchema = @"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\FpdlPolicyTypes.xsd";
         
@@ -40,37 +41,51 @@ namespace UnitTests
             }
         }
         */
+        #endregion
 
         [TestMethod]
         public void TestDeployLoading1()    // Valid deploy file
         {
-            //string fpdlSchemaLocation = @"C:\Users\peter\Source\Repos\Guard Emulator\Guard Emulator\Schema\";
-
-            fpdlParser parser = new fpdlParser();
-            /*
-            if (!parser.LoadSchema("http://www.niteworks.net/fpdl", fpdlSchemaLocation))
-            {
-                Assert.Fail(parser.errorMsg);
-            }
-            */
+            FpdlParser parser = new FpdlParser();
 
             if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
             {
-                Assert.Fail(parser.errorMsg);
+                Assert.Fail(parser.ErrorMsg);
             }
+            Assert.AreEqual("127.0.0.1:5556", parser.ExportSub);
+            Assert.AreEqual(OspProtocol.HPSD, parser.ExportProtocol);
         }
 
         [TestMethod]
         public void TestExportPolicyGeneration1()
         {
-            fpdlParser parser = new fpdlParser();
+            FpdlParser parser = new FpdlParser();
 
             if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
             {
-                Assert.Fail(parser.errorMsg);
+                Assert.Fail(parser.ErrorMsg);
             }
 
-            XDocument foo = parser.ExportPolicy();
+            XDocument policy = parser.ExportPolicy;
+            Assert.IsNotNull(policy);
+
+            Assert.AreEqual("1", policy.Element("exportPolicy").Element("rule").Attribute("ruleNumber").Value);
+        }
+
+        [TestMethod]
+        public void TestImportPolicyGeneration1()
+        {
+            FpdlParser parser = new FpdlParser();
+
+            if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
+            {
+                Assert.Fail(parser.ErrorMsg);
+            }
+
+            XDocument policy = parser.ImportPolicy;
+            Assert.IsNotNull(policy);
+
+            Assert.AreEqual("1", policy.Element("importPolicy").Element("rule").Attribute("ruleNumber").Value);
         }
     }
 }

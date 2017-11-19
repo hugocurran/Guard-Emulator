@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Guard_Emulator;
 using Google.Protobuf;
+using System.Xml.Linq;
 
 namespace UnitTests
 {
@@ -18,10 +19,22 @@ namespace UnitTests
         string subscriber = "127.0.0.1:5556";
         string publisher = "127.0.0.1:5555";
 
+        XDocument testPolicy = new XDocument();
+
         [TestMethod]
         public void TestProcessorBasicSocketToSocketCopy()
         {
-            byte[] testData = System.Text.Encoding.ASCII.GetBytes("Hello World!");
+            // Create an empty policy file
+            XElement emptyPolicy =
+                new XElement("exportPolicy",
+                    new XElement("rule",
+                        new XAttribute("ruleNumber", "1"),
+                        new XElement("federate", "*"),
+                        new XElement("entity", "*"),
+                        new XElement("objectName", "*"),
+                        new XElement("attributeName", "*"))
+            );
+            testPolicy.Add(emptyPolicy);
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -31,7 +44,7 @@ namespace UnitTests
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
-                var processorObj = new Processor(subscriber, publisher, protocol, token);
+                var processorObj = new Processor(subscriber, publisher, protocol, testPolicy, token);
             }, token);
 
             // Wait for processor thread to stabilise
@@ -60,6 +73,7 @@ namespace UnitTests
                 int counter = 1;
                 int received = 0;
                 int missed = 0;
+                byte[] testData;
                 byte[] message = null;
                 TimeSpan timeout = new TimeSpan(1000000);    // 10 msec
                 while (counter < 25)

@@ -12,25 +12,36 @@ namespace Guard_Emulator
     {
         static void Main(string[] args)
         {
-            string exportSub = args[0];     // Export subscribe socket
-            string exportPub = args[1];     // Export publish socket
-            string importSub = args[2];     // Import subscribe socket
-            string importPub = args[3];     // Import publish soscket
-            string policy = args[4];        // Policy file
+            string policy = args[0];        // Policy file
 
+            // Parse the policy file
+            FpdlParser fpdlParser = new FpdlParser();
+            if (!fpdlParser.LoadDeployDocument(args[4]))
+            {
+                Console.WriteLine("FPDL Parser error: {0}", fpdlParser.ErrorMsg);
+            }
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD;
             var exportTask = Task.Run(() =>
             {
-                var exportObj = new Processor(exportSub, exportPub, protocol, token);
+                var exportObj = new Processor(
+                    fpdlParser.ExportSub, 
+                    fpdlParser.ExportPub,
+                    fpdlParser.ExportProtocol,
+                    fpdlParser.ExportPolicy, 
+                    token);
             }, token);
 
             var importTask = Task.Run(() =>
             {
-                var importObj = new Processor(importSub, importPub, protocol, token);
+                var importObj = new Processor(
+                    fpdlParser.ImportSub,
+                    fpdlParser.ImportPub,
+                    fpdlParser.ImportProtocol,
+                    fpdlParser.ImportPolicy, 
+                    token);
             }, token);
 
             Task.WaitAll();
