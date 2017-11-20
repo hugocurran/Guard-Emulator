@@ -17,6 +17,8 @@ namespace Guard_Emulator
         WebLVC
     }
 
+
+
     public class Processor
     {
 
@@ -62,7 +64,7 @@ namespace Guard_Emulator
                             break;
                     }
 
-                    if (applyPolicy(iMesg))
+                    if (ApplyPolicy(iMesg, policy))
                     {
                         pubSocket.SendFrame(message);
                         // Log an event message
@@ -82,7 +84,7 @@ namespace Guard_Emulator
         /// </summary>
         /// <param name="message">message in standardised internal format</param>
         /// <returns>True if message permitted, else False</returns>
-        bool applyPolicy(InternalMessage intMessage)
+        bool ApplyPolicy(InternalMessage intMessage, XDocument policy)
         {
             // Phase 0: filter out heartbeats etc.
             if (intMessage.Type == MessageType.Status)
@@ -91,6 +93,10 @@ namespace Guard_Emulator
             }
 
             // Phase 1: check the message against federates
+           // IEnumerable<XElement> list = policy.
+            from policy in root.Elements().Elements("federate")
+                    where (string)typeElement.Attribute("Value") == "Yes"
+                    select (string)typeElement.Parent.Element("Text");
 
 
             // Phase 2: check the message against entities
@@ -104,7 +110,7 @@ namespace Guard_Emulator
 
             // Phase 4: check the message against attribute names
 
-          return true;
+            return true;
         }
     }
 }
