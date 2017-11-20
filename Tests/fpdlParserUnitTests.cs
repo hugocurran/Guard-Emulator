@@ -1,12 +1,15 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Guard_Emulator;
 using System.Xml.Linq;
+using System.IO;
 
 namespace UnitTests
 {
     [TestClass]
     public class fpdlParserUnitTests
     {
+        string solution_dir = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+
         #region schema tests
         /*
         string fpdlSchema = @"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\FpdlPolicyTypes.xsd";
@@ -48,7 +51,7 @@ namespace UnitTests
         {
             FpdlParser parser = new FpdlParser();
 
-            if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
+            if (!parser.LoadDeployDocument(solution_dir + @"\..\Sample test data\Deploy1.xml"))
             {
                 Assert.Fail(parser.ErrorMsg);
             }
@@ -61,7 +64,7 @@ namespace UnitTests
         {
             FpdlParser parser = new FpdlParser();
 
-            if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
+            if (!parser.LoadDeployDocument(solution_dir + @"\..\Sample test data\Deploy1.xml"))
             {
                 Assert.Fail(parser.ErrorMsg);
             }
@@ -77,7 +80,7 @@ namespace UnitTests
         {
             FpdlParser parser = new FpdlParser();
 
-            if (!parser.LoadDeployDocument(@"C:\Users\peter\Source\Repos\Guard Emulator\Tests\Sample test data\Deploy1.xml"))
+            if (!parser.LoadDeployDocument(solution_dir + @"\..\Sample test data\Deploy1.xml"))
             {
                 Assert.Fail(parser.ErrorMsg);
             }

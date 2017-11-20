@@ -21,7 +21,6 @@ namespace Guard_Emulator
 
     public class Processor
     {
-
         public Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
         {
             // Create a timer to check for task cancellation
@@ -94,9 +93,7 @@ namespace Guard_Emulator
 
             // Phase 1: check the message against federates
            // IEnumerable<XElement> list = policy.
-            from policy in root.Elements().Elements("federate")
-                    where (string)typeElement.Attribute("Value") == "Yes"
-                    select (string)typeElement.Parent.Element("Text");
+
 
 
             // Phase 2: check the message against entities
