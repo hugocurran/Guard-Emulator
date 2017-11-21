@@ -115,13 +115,13 @@ namespace Guard_Emulator
             IEnumerable<XElement> federateMatches =
                 from el in rules
                 where (string)el.Element("federate") == intMessage.Federate
-                select el.Parent;
+                select el;
             if (federateMatches.Count() == 0)
             {
                 federateMatches =
                     from el in rules
                     where (string)el.Element("federate") == "*"
-                    select el.Parent;
+                    select el;
                 if (federateMatches.Count() == 0)
                     return false;
             }
@@ -130,13 +130,13 @@ namespace Guard_Emulator
             IEnumerable<XElement> entityMatches =
                 from el in federateMatches
                 where (string)el.Element("entity") == intMessage.EntityID
-                select el.Parent;
+                select el;
             if (entityMatches.Count() == 0)
             {
                 entityMatches =
                     from el in federateMatches
                     where (string)el.Element("entity") == "*"
-                    select el.Parent;
+                    select el;
                 if (entityMatches.Count() == 0)
                     return false;
             }
@@ -148,13 +148,13 @@ namespace Guard_Emulator
                 objectMatches =
                     from el in entityMatches
                     where (string)el.Element("objectName") == intMessage.ObjectName
-                        select el.Parent;
+                        select el;
                 if (objectMatches.Count() == 0)
                 {
                     objectMatches =
                         from el in entityMatches
                         where (string)el.Element("objectName") == "*"
-                        select el.Parent;
+                        select el;
                     if (objectMatches.Count() == 0)
                         return false;
                 }
@@ -171,20 +171,20 @@ namespace Guard_Emulator
                 IEnumerable<XElement> interactionMatches =
                     from el in entityMatches
                     where (string)el.Element("objectName") == intMessage.InteractionName
-                    select el.Parent;
+                    select el;
                 if (interactionMatches.Count() == 0)
                 {
                     interactionMatches =
                         from el in entityMatches
                         where (string)el.Element("objectName") == "*"
-                        select el.Parent;
-                    if (interactionMatches.Count() == 0)
-                        return false;
-                    else
-                    {
-                        ruleNumber = objectMatches.ElementAt(0).Attribute("ruleNumber").Value;
-                        return true;    // Don't check parameters
-                    }
+                        select el;
+                }
+                if (interactionMatches.Count() == 0)
+                    return false;
+                else
+                {
+                    ruleNumber = interactionMatches.ElementAt(0).Attribute("ruleNumber").Value;
+                    return true;    // Don't check parameters
                 }
             }
 
@@ -196,13 +196,13 @@ namespace Guard_Emulator
                     IEnumerable<XElement> attribMatches =
                         from el in objectMatches
                         where (string)el.Element("attributeName") == attrib
-                        select el.Parent;
+                        select el;
                     if (attribMatches.Count() == 0)
                     {
                         attribMatches =
                             from el in entityMatches
                             where (string)el.Element("attributeName") == "*"
-                            select el.Parent;
+                            select el;
                         if (attribMatches.Count() == 0)
                             return false;
                     }
