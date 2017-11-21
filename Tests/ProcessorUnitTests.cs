@@ -19,12 +19,13 @@ namespace UnitTests
         string subscriber = "127.0.0.1:5556";
         string publisher = "127.0.0.1:5555";
 
-        XDocument testPolicy = new XDocument();
+        
 
         [TestMethod]
         public void TestProcessorBasicSocketToSocketCopy()
         {
             // Create an empty policy file
+            XDocument testPolicy = new XDocument();            
             XElement emptyPolicy =
                 new XElement("exportPolicy",
                     new XElement("rule",
@@ -109,6 +110,42 @@ namespace UnitTests
             }
         }
 
+        [TestMethod]
+        public void TestObjectCreatePolicyProcessing1()
+        {
+            // Create a matching policy file
+            XDocument testPolicy = new XDocument();
+            XElement emptyPolicy =
+                new XElement("exportPolicy",
+                    new XElement("rule",
+                        new XAttribute("ruleNumber", "1"),
+                        new XElement("federate", "*"),
+                        new XElement("entity", "*"),
+                        new XElement("objectName", "*"),
+                        new XElement("attributeName", "*"))
+            );
+            testPolicy.Add(emptyPolicy);
+
+            // Create an internal message for an Object Update
+            long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
+            InternalMessage intMessage = new InternalMessage()
+            {
+                Federate = "CGF",
+                EntityID = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
+                ObjectName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft",
+                Type = MessageType.ObjectCreate,
+                TimeStamp = calcTime,
+                SequenceNumber = 1
+            };
+
+            // Create a 'null' processor for testing
+            Processor processor = new Processor();
+
+            Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
+        }
+
         static HpsdMessage statusMessage(int sequence)
         {
             // Create an HPSD Status message for testing
@@ -128,6 +165,28 @@ namespace UnitTests
                 }
             };
             return statusMessage;
+        }
+
+        static HpsdMessage objectCreate(int sequence)
+        {
+            // Create an HPSD ObjectCreate message for testing
+            long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
+            HpsdMessage objectCreateMessage = new HpsdMessage()
+            {
+                ProtocolVersion = 81,
+                SequenceNumber = sequence,
+                Timestamp = timeStamp,
+                MessageType = HpsdMessage.Types.MessageType.ObjectCreate,
+                ObjectCreate = new ObjectCreate()
+                {
+                    ProducingFederate = "CGF",
+                    InstanceId = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
+                    ObjectClassName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"
+                }
+            };
+            return objectCreateMessage;
         }
 
         }
