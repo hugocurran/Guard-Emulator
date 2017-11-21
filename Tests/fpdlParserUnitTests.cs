@@ -47,7 +47,7 @@ namespace UnitTests
         #endregion
 
         [TestMethod]
-        public void TestDeployLoading1()    // Valid deploy file
+        public void DeployLoading1()    // Valid deploy file
         {
             FpdlParser parser = new FpdlParser();
 
@@ -60,7 +60,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestExportPolicyGeneration1()
+        public void ExportPolicyGeneration1()
         {
             FpdlParser parser = new FpdlParser();
 
@@ -76,7 +76,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestImportPolicyGeneration1()
+        public void ImportPolicyGeneration1()
         {
             FpdlParser parser = new FpdlParser();
 

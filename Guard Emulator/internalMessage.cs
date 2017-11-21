@@ -29,7 +29,6 @@ namespace Guard_Emulator
         public string EntityID { get; set; }
         public string ObjectName { get; set; }
         public List<string> Attribute { get { return _attribs; } }
-        
         public string InteractionName { get; set; }
         public bool SessionActive { get; set; }
         public string SessionName { get; set; }

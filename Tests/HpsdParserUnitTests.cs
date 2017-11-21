@@ -13,7 +13,7 @@ namespace UnitTests
     {
         
         [TestMethod]
-        public void TestHPSDStatusMessageParsing()
+        public void HPSDStatusMessageParsing()
         {
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -46,7 +46,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestHPSDObjectCreateMessageParsing()
+        public void HPSDObjectCreateMessageParsing()
         {
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -82,7 +82,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestHPSDObjectDeleteMessageParsing()
+        public void HPSDObjectDeleteMessageParsing()
         {
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -117,7 +117,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestHPSDObjectUpdateMessageParsing()
+        public void HPSDObjectUpdateMessageParsing()
         {
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -160,7 +160,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void TestHPSDInteractionMessageParsing()
+        public void HPSDInteractionMessageParsing()
         {
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
