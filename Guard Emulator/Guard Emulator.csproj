@@ -16,4 +16,10 @@
     <PackageReference Include="System.Json" Version="4.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update=".dockerignore">
+      <DependentUpon>Dockerfile</DependentUpon>
+    </None>
+  </ItemGroup>
+
 </Project>
