@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2017 rel. 3 sp1 (x64) (http://www.altova.com) by Peter Curran (Ascentor Ltd) -->
 <?purpose description="This schema defines the FPDL Policy"?>
-<?version number="0.2" date="24 Oct 2017"?>
+<?version number="0.3" date="22 Nov 2017"?>
 <?copyright statement="Crown Copyright"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:fpdl="http://www.niteworks.net/fpdl" targetNamespace="http://www.niteworks.net/fpdl" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.2" vc:minVersion="1.1">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning" xmlns:fpdl="http://www.niteworks.net/fpdl" targetNamespace="http://www.niteworks.net/fpdl" elementFormDefault="qualified" attributeFormDefault="unqualified" version="0.3" vc:minVersion="1.1">
 	<xs:include schemaLocation="FpdlCommonTypes.xsd"/>
 	<xs:complexType name="policyType">
 		<xs:sequence>

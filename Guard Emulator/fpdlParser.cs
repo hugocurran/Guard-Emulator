@@ -120,7 +120,7 @@ namespace Guard_Emulator
             IEnumerable<XElement> ospList = null;
             foreach (XElement component in componentList)
             {
-                if (component.Attribute("componentType").Value == "guard")
+                if (component.Attribute("componentType").Value == "Guard")
                 {
                     interfaceList = component.Descendants(f + "interface");
                     ospList = component.Descendants(f + "osp");
@@ -130,6 +130,11 @@ namespace Guard_Emulator
             if ((interfaceList == null) || (ospList == null))
             {
                 ErrorMsg = "No component defining Guard found";
+                return false;
+            }
+            if ((interfaceList.Count() < 2) || (ospList.Count() != 2))
+            {
+                ErrorMsg = "Invalid component specification for Guard (wrong interface or osp count";
                 return false;
             }
 
@@ -144,9 +149,9 @@ namespace Guard_Emulator
                 // Export
                 if (osp.Element(f + "path").Value == "ExportPath")
                 {
-                    ExportSub = interfaces[osp.Element(f + "interfaceName").Value] + ":" + osp.Element(f + "inputSocketPort").Value;
-                    ImportPub = interfaces[osp.Element(f + "interfaceName").Value] + ":" + osp.Element(f + "outputSocketPort").Value;
-                    if (osp.Attribute("protocol").Value == "HPSD")
+                    ExportSub = osp.Element(f + "inputPort").Value;
+                    ExportPub = osp.Element(f + "outputPort").Value;
+                    if (osp.Element(f+ "protocol").Value == "HPSD")
                         ExportProtocol = OspProtocol.HPSD;
                     else
                         ExportProtocol = OspProtocol.WebLVC;
@@ -154,13 +159,18 @@ namespace Guard_Emulator
                 // Import
                 else
                 {
-                    ImportSub = interfaces[osp.Element(f + "interfaceName").Value] + ":" + osp.Element(f + "inputSocketPort").Value;
-                    ExportPub = interfaces[osp.Element(f + "interfaceName").Value] + ":" + osp.Element(f + "outputSocketPort").Value;
-                    if (osp.Attribute("protocol").Value == "HPSD")
+                    ImportSub = osp.Element(f + "inputPort").Value;
+                    ImportPub = osp.Element(f + "outputPort").Value;
+                    if (osp.Element(f+ "protocol").Value == "HPSD")
                         ImportProtocol = OspProtocol.HPSD;
                     else
                         ImportProtocol = OspProtocol.WebLVC;
                 }
+            }
+            if (ExportProtocol != ImportProtocol)
+            {
+                ErrorMsg = "Mismatch between import and export messaging protocol";
+                return false;
             }
             return true;
         }
@@ -209,9 +219,17 @@ namespace Guard_Emulator
                     {
                         _obj = objectName.Element(f + "objectClassName").Value;
                         IEnumerable<XElement> attributeList = objectName.Descendants(f + "attributeName");
-                        foreach (XElement attribute in attributeList)
+                        if (attributeList.Count() > 0)
                         {
-                            _attr = attribute.Value;
+                            foreach (XElement attribute in attributeList)
+                            {
+                                _attr = attribute.Value;
+                                exportPolicy.Add(_fed, _ent, _obj, _attr);
+                            }
+                        }
+                        else  //If no attributes defined then all attributes permitted
+                        {
+                            _attr = "*";
                             exportPolicy.Add(_fed, _ent, _obj, _attr);
                         }
                     }
@@ -262,9 +280,17 @@ namespace Guard_Emulator
                     {
                         _obj = objectName.Element(f + "objectClassName").Value;
                         IEnumerable<XElement> attributeList = objectName.Descendants(f + "attributeName");
-                        foreach (XElement attribute in attributeList)
+                        if (attributeList.Count() > 0)
                         {
-                            _attr = attribute.Value;
+                            foreach (XElement attribute in attributeList)
+                            {
+                                _attr = attribute.Value;
+                                importPolicy.Add(_fed, _ent, _obj, _attr);
+                            }
+                        }
+                        else   // If no attribute defined then all are permitted
+                        {
+                            _attr = "*";
                             importPolicy.Add(_fed, _ent, _obj, _attr);
                         }
                     }

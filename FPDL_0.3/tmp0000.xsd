@@ -79,9 +79,9 @@
 								</xs:annotation>
 								<xs:simpleType>
 									<xs:restriction base="xs:string">
-										<xs:enumeration value="Proxy"/>
-										<xs:enumeration value="Guard"/>
-										<xs:enumeration value="Filter"/>
+										<xs:enumeration value="proxy"/>
+										<xs:enumeration value="guard"/>
+										<xs:enumeration value="filter"/>
 									</xs:restriction>
 								</xs:simpleType>
 							</xs:attribute>
@@ -103,25 +103,15 @@
 					<xs:documentation>Federation interface configuration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="host" type="fpdl:hostDeployType" minOccurs="0">
+			<xs:element name="host" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Host configuration</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="osp" type="fpdl:ospDeployType" minOccurs="0" maxOccurs="2">
-				<xs:annotation>
-					<xs:documentation>Object serialisation protocol configuration</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="export" minOccurs="0">
+			<xs:element name="export" type="fpdl:exportDeployType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>Export policy</xs:documentation>
 				</xs:annotation>
-				<xs:complexType>
-					<xs:sequence>
-						<xs:element name="source" type="fpdl:exportDeployType" maxOccurs="unbounded"/>
-					</xs:sequence>
-				</xs:complexType>
 			</xs:element>
 			<xs:element name="import" type="fpdl:importDeployType" minOccurs="0">
 				<xs:annotation>
@@ -134,42 +124,6 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:all>
-	</xs:complexType>
-	<xs:complexType name="ospDeployType">
-		<xs:sequence>
-			<xs:element name="path">
-				<xs:annotation>
-					<xs:documentation>Directionality of this OSP configuration</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="ExportPath"/>
-						<xs:enumeration value="ImportPath"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="protocol">
-				<xs:annotation>
-					<xs:documentation>Messaging protocol in use</xs:documentation>
-				</xs:annotation>
-				<xs:simpleType>
-					<xs:restriction base="xs:string">
-						<xs:enumeration value="HPSD"/>
-						<xs:enumeration value="WebLVC"/>
-					</xs:restriction>
-				</xs:simpleType>
-			</xs:element>
-			<xs:element name="inputPort" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Address:Port for  input</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="outputPort" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Address:Port for outpu</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="filterDeployType">
 		<xs:sequence>
@@ -384,23 +338,23 @@
 								</xs:restriction>
 							</xs:simpleType>
 						</xs:element>
-						<xs:element name="fom">
+						<xs:element name="fom" maxOccurs="unbounded">
 							<xs:annotation>
 								<xs:documentation>FOM</xs:documentation>
 							</xs:annotation>
 							<xs:complexType>
-								<xs:all>
-									<xs:element name="uri" type="xs:anyURI" maxOccurs="unbounded">
+								<xs:choice>
+									<xs:element name="uri" type="xs:anyURI">
 										<xs:annotation>
 											<xs:documentation>URI of a FOM or FOM module in use in this federation</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-									<xs:element name="fileName" type="xs:string" maxOccurs="unbounded">
+									<xs:element name="fileName" type="xs:string">
 										<xs:annotation>
 											<xs:documentation>Filepath of a FOM or FOM module in use in this federation</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-								</xs:all>
+								</xs:choice>
 							</xs:complexType>
 						</xs:element>
 					</xs:sequence>
@@ -408,11 +362,11 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="importDeployType">
+	<xs:complexType name="exportDeployType">
 		<xs:complexContent>
 			<xs:extension base="fpdl:publishType">
 				<xs:sequence>
-					<xs:element name="interfaceName" type="xs:string" minOccurs="0">
+					<xs:element name="interfaceName" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Interface binding for the policy</xs:documentation>
 						</xs:annotation>
@@ -421,11 +375,11 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="exportDeployType">
+	<xs:complexType name="importDeployType">
 		<xs:complexContent>
 			<xs:extension base="fpdl:subscribeType">
 				<xs:sequence>
-					<xs:element name="interfaceName" type="xs:string" minOccurs="0">
+					<xs:element name="interfaceName" type="xs:string">
 						<xs:annotation>
 							<xs:documentation>Interface binding for the policy</xs:documentation>
 						</xs:annotation>
