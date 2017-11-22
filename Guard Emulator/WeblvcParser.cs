@@ -22,11 +22,11 @@ namespace Guard_Emulator
 
             JsonObject lvcMessage = (JsonObject)JsonObject.Parse(System.Text.Encoding.UTF8.GetString(message));
 
-            JsonArray cdsAdmin = (JsonArray)lvcMessage["cdsAdmin"];
+            JsonObject cdsAdmin = (JsonObject)lvcMessage["cdsAdmin"];
             parsedMessage.Federate = cdsAdmin["Origin"];
             parsedMessage.EntityID = cdsAdmin["ObjectId"];
             parsedMessage.SequenceNumber = cdsAdmin["Sequence"];
-            webLvcOperation bar = (webLvcOperation)Enum.Parse(typeof(webLvcOperation), cdsAdmin["Operation"]);
+            webLvcOperation bar = (webLvcOperation)Enum.Parse(typeof(webLvcOperation), cdsAdmin["Operation"].ToString());
 
             switch(bar)
             {
@@ -43,13 +43,10 @@ namespace Guard_Emulator
                 case webLvcOperation.Update:
                     parsedMessage.Type = MessageType.ObjectUpdate;
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
-                    JsonArray attributes = (JsonArray)lvcMessage["Attributes"];
-                    foreach (JsonObject attrib in attributes)
+                    JsonObject attributes = (JsonObject)lvcMessage["Attributes"];
+                    foreach (var attrib in attributes)
                     {
-                        foreach (string key in attrib.Keys)
-                        {
-                            parsedMessage.Attribute.Add(key);
-                        }
+                            parsedMessage.Attribute.Add(attrib.Key);
                     }
                     break;
 
