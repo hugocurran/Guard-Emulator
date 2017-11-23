@@ -11,16 +11,21 @@ using Google.Protobuf;
 
 namespace Guard_Emulator
 {
+    /// <summary>
+    /// Support OSP messaging protocols
+    /// </summary>
     public enum OspProtocol
     {
         HPSD,
         WebLVC
     }
 
-    
+    /// <summary>
+    /// Guard path processor
+    /// </summary>
     public class Processor
     {
-        // Set a rule entry = 0 (Rule 0 is no match)
+        // Set a default rule match value
         private string ruleNumber = "NOMATCH";
 
         /// <summary>
@@ -33,6 +38,14 @@ namespace Guard_Emulator
         /// </summary>
         internal Processor() { }
 
+        /// <summary>
+        /// Guard path processor
+        /// </summary>
+        /// <param name="subscribe">Address:Port for the subscribe socket</param>
+        /// <param name="publish">Address:Port for the publish socket</param>
+        /// <param name="osp">OSP message protocol</param>
+        /// <param name="policy">Policy ruleset to apply</param>
+        /// <param name="token">Cancellation token</param>
         public Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
         {
             // Create a timer to check for task cancellation
@@ -46,12 +59,10 @@ namespace Guard_Emulator
                 subSocket.Options.ReceiveHighWatermark = 1000;
                 subSocket.Bind("tcp://" + subscribe);
                 subSocket.SubscribeToAnyTopic();
-                //Console.WriteLine("Subscriber socket binding...");
-
+                
                 pubSocket.Options.SendHighWatermark = 1000;
                 pubSocket.Connect("tcp://" + publish);
-                //Console.WriteLine("Publisher socket connecting...");
-
+                
                 // Start monitoring the cancellation token
                 poller.RunAsync();
 
@@ -60,14 +71,11 @@ namespace Guard_Emulator
                 while (true)
                 {
                     message = subSocket.ReceiveFrameBytes();
-                    //Console.WriteLine("Got one: {0}", System.Text.Encoding.ASCII.GetString(message));
-
+                   
                     switch (osp)
                     {
                         case OspProtocol.HPSD:
-                            //Console.WriteLine("About to Parse message ");
                             iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
-                            //Console.WriteLine("Parsed message: Sequence = {0}", iMesg.SequenceNumber);
                             break;
 
                         case OspProtocol.WebLVC:
@@ -88,20 +96,19 @@ namespace Guard_Emulator
                 }
             }
         }
-
-
+        
         /// <summary>
-        /// Test the message against the policy
+        /// Test the message against the policy ruleset
         /// </summary>
         /// <param name="message">message in standardised internal format</param>
         /// <returns>True if message permitted, else False</returns>
-        internal bool ApplyPolicy(InternalMessage intMessage, XDocument policy)
+        internal bool ApplyPolicy(InternalMessage intMessage, XDocument ruleSet)
         {
             // Reset ruleNumber
             ruleNumber = "NOMATCH";
 
-            // Load the policy rules into an IEnumerable<XElement>
-            IEnumerable<XElement> rules = policy.Descendants("rule");
+            // Load the policy rules
+            IEnumerable<XElement> rules = ruleSet.Descendants("rule");
 
             // Phase 0: filter out heartbeats etc.
             if (intMessage.Type == MessageType.Status)
@@ -111,7 +118,6 @@ namespace Guard_Emulator
             }
 
             // Phase 1: check the message against federates
-            // IEnumerable<XElement> list = policy.
             IEnumerable<XElement> federateMatches =
                 from el in rules
                 where (string)el.Element("federate") == intMessage.Federate

@@ -69,6 +69,11 @@ namespace Guard_Emulator
     */
         #endregion
 
+            /// <summary>
+            /// Load a FPDL Deploy document into the parser
+            /// </summary>
+            /// <param name="fileName">Deploy document filename</param>
+            /// <returns>true if successful, else false</returns>
         internal bool LoadDeployDocument(string fileName)
         {
             try
@@ -99,17 +104,47 @@ namespace Guard_Emulator
             return (ParseOsp());
         }
 
+        /// <summary>
+        /// Guard component export policy
+        /// </summary>
         internal XDocument ExportPolicy { get { return _exportPolicy(); } }
+        /// <summary>
+        /// Guard component import policy
+        /// </summary>
         internal XDocument ImportPolicy { get { return _importPolicy(); } }
+        /// <summary>
+        /// Parser error message
+        /// </summary>
         internal string ErrorMsg { get; private set; }
+        /// <summary>
+        /// Address:port for export path subscribe socket
+        /// </summary>
         internal string ExportSub { get; private set; }
+        /// <summary>
+        /// Address:port for export path publish socket
+        /// </summary>
         internal string ExportPub { get; private set; }
+        /// <summary>
+        /// Address:port for import path subscribe socket
+        /// </summary>
         internal string ImportSub { get; private set; }
+        /// <summary>
+        /// Address:port for import path publish socket
+        /// </summary>
         internal string ImportPub { get; private set; }
+        /// <summary>
+        /// OSP messaging protocol for the export path
+        /// </summary>
         internal OspProtocol ExportProtocol { get; private set; }
+        /// <summary>
+        /// OSP messaging protocol for the import path
+        /// </summary>
         internal OspProtocol ImportProtocol { get; private set; }
 
-
+        /// <summary>
+        /// Determin the OSP settings from the Deploy document
+        /// </summary>
+        /// <returns>true if successful</returns>
         private bool ParseOsp()
         {
             // Extract OSP settings from the deploy doc
@@ -175,10 +210,14 @@ namespace Guard_Emulator
             return true;
         }
 
+        /// <summary>
+        /// Determine the export policy 
+        /// </summary>
+        /// <returns>true if no errors</returns>
         private XDocument _exportPolicy()
         {
             // Initialise export policy
-            Policy exportPolicy = new Policy("exportPolicy");
+            RuleSet exportPolicy = new RuleSet("exportPolicy");
 
             // Build export policy from the deploy doc
             IEnumerable<XElement> componentList = deploy.Element(f+"Deploy").Element(f + "system").Elements(f + "component");
@@ -186,7 +225,7 @@ namespace Guard_Emulator
             IEnumerable<XElement> sourceList = null;
             foreach (XElement component in componentList)
             {
-                if (component.Attribute("componentType").Value == "guard")
+                if (component.Attribute("componentType").Value == "Guard")
                 {
                     sourceList = component.Element(f + "export").Descendants(f+"source");
                     break;
@@ -244,12 +283,17 @@ namespace Guard_Emulator
                     }
                 }
             }
-            return exportPolicy.GetPolicy();
+            return exportPolicy.GetRuleSet();
         }
+
+        /// <summary>
+        /// Determine the import policy
+        /// </summary>
+        /// <returns>true if no errors</returns>
         private XDocument _importPolicy()
         {
             // Initialise import policy
-            Policy importPolicy = new Policy("importPolicy");
+            RuleSet importPolicy = new RuleSet("importPolicy");
             
             // Build import policy from the deploy doc
             IEnumerable<XElement> componentList = deploy.Element(f + "Deploy").Element(f + "system").Elements(f + "component");
@@ -257,7 +301,7 @@ namespace Guard_Emulator
             IEnumerable<XElement> importList = null;
             foreach (XElement component in componentList)
             {
-                if (component.Attribute("componentType").Value == "guard")
+                if (component.Attribute("componentType").Value == "Guard")
                 {
                     importList = component.Descendants(f + "import");
                     break;
@@ -305,38 +349,56 @@ namespace Guard_Emulator
                     }
                 }
             }
-            return importPolicy.GetPolicy();
+            return importPolicy.GetRuleSet();
         }
     }
 
-    internal class Policy
+    /// <summary>
+    /// Specification for the Guard ruleset
+    /// </summary>
+    internal class RuleSet
     {
-        XDocument policy;
+        XDocument ruleSet;
         XElement firstElement;
         int counter;
 
-        internal Policy(string policyName)
+        /// <summary>
+        /// Constructor initialises a new ruleset
+        /// </summary>
+        /// <param name="ruleSetName">Name for the policy (eg exportPolicy)</param>
+        internal RuleSet(string ruleSetName)
         {
             // Initialise policy
-            policy = new XDocument();
-            policy.AddFirst(new XElement(policyName));
-            firstElement = policy.Element(policyName);
+            ruleSet = new XDocument();
+            ruleSet.AddFirst(new XElement(ruleSetName));
+            firstElement = ruleSet.Element(ruleSetName);
             counter = 1;
         }
 
+        /// <summary>
+        /// Add a rule to the Guard ruleset
+        /// </summary>
+        /// <param name="fed">Federate name or *</param>
+        /// <param name="ent">EntityID or *</param>
+        /// <param name="obj">Object/Interaction classname or *</param>
+        /// <param name="attr">Attribute/Parameter name or *</param>
         internal void Add(string fed, string ent, string obj, string attr)
         {
-            XElement policyLine =
+            XElement rule =
                 new XElement("rule",
                     new XAttribute("ruleNumber", counter.ToString()),
                     new XElement("federate", fed),
                     new XElement("entity", ent),
                     new XElement("objectName", obj),
                     new XElement("attributeName", attr));
-            firstElement.Add(policyLine);
+            firstElement.Add(rule);
             counter++;
         }
         
-        internal XDocument GetPolicy() {  return policy; }
+        /// <summary>
+        /// Return the guard ruleset
+        /// </summary>
+        /// <returns>Ruleset</returns>
+        internal XDocument GetRuleSet() {  return ruleSet; }
     }
 }

@@ -20,7 +20,6 @@ namespace Guard_Emulator
     public class InternalMessage
     {
         List<string> _attribs = new List<string>();
-        internal string AddAttribute { set { _attribs.Add(value); } } // Here to support unit testing
 
         public DateTimeOffset TimeStamp { get; set; }
         public int SequenceNumber { get; set; }

@@ -298,11 +298,11 @@ namespace UnitTests
                 Federate = "CGF",
                 EntityID = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
                 ObjectName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft",
-                AddAttribute = "Marking",
                 Type = MessageType.ObjectUpdate,
                 TimeStamp = calcTime,
                 SequenceNumber = 1
             };
+            intMessage.Attribute.Add("Marking");
 
             // Create a 'null' processor for testing
             Processor processor = new Processor();
@@ -358,11 +358,11 @@ namespace UnitTests
                 Federate = "CGF",
                 EntityID = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
                 ObjectName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft",
-                AddAttribute = "Type",
                 Type = MessageType.ObjectUpdate,
                 TimeStamp = calcTime,
                 SequenceNumber = 1
             };
+            intMessage.Attribute.Add("Type");
 
             // Create a 'null' processor for testing
             Processor processor = new Processor();

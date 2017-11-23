@@ -4,10 +4,19 @@ using System.Text;
 
 namespace Guard_Emulator
 {
+    /// <summary>
+    /// Parser for OSP messages using HPSD
+    /// </summary>
     public static class HpsdParser
     {
+        /// <summary>
+        /// Parse an HPSD message
+        /// </summary>
+        /// <param name="message">OSP message to parse</param>
+        /// <returns>Parsed message using internal message format</returns>
         public static InternalMessage ParseMessage(HpsdMessage message)
         {
+            // Convert message timestamp to DateTime
             InternalMessage parsedMessage = new InternalMessage();
             DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             parsedMessage.TimeStamp = start.AddMilliseconds(message.Timestamp).ToLocalTime();
