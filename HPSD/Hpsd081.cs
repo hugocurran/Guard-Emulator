@@ -45,7 +45,7 @@ namespace Guard_Emulator {
             "bnN0YW5jZV9pZBgDIAEoCRIZChF1c2VyX3N1cHBsaWVkX3RhZxgEIAEoDCKF",
             "AQoLSW50ZXJhY3Rpb24SGgoScHJvZHVjaW5nX2ZlZGVyYXRlGAEgASgJEh4K",
             "FmludGVyYWN0aW9uX2NsYXNzX25hbWUYAiABKAkSHwoKcGFyYW1ldGVycxgD",
-            "IAEoCzILLk5hbWVkVmFsdWUSGQoRdXNlcl9zdXBwbGllZF90YWcYBCABKAxC",
+            "IAMoCzILLk5hbWVkVmFsdWUSGQoRdXNlcl9zdXBwbGllZF90YWcYBCABKAxC",
             "EaoCDkd1YXJkX0VtdWxhdG9yYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
@@ -1464,7 +1464,7 @@ namespace Guard_Emulator {
     public Interaction(Interaction other) : this() {
       producingFederate_ = other.producingFederate_;
       interactionClassName_ = other.interactionClassName_;
-      Parameters = other.parameters_ != null ? other.Parameters.Clone() : null;
+      parameters_ = other.parameters_.Clone();
       userSuppliedTag_ = other.userSuppliedTag_;
     }
 
@@ -1503,16 +1503,15 @@ namespace Guard_Emulator {
 
     /// <summary>Field number for the "parameters" field.</summary>
     public const int ParametersFieldNumber = 3;
-    private global::Guard_Emulator.NamedValue parameters_;
+    private static readonly pb::FieldCodec<global::Guard_Emulator.NamedValue> _repeated_parameters_codec
+        = pb::FieldCodec.ForMessage(26, global::Guard_Emulator.NamedValue.Parser);
+    private readonly pbc::RepeatedField<global::Guard_Emulator.NamedValue> parameters_ = new pbc::RepeatedField<global::Guard_Emulator.NamedValue>();
     /// <summary>
     /// Required
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Guard_Emulator.NamedValue Parameters {
+    public pbc::RepeatedField<global::Guard_Emulator.NamedValue> Parameters {
       get { return parameters_; }
-      set {
-        parameters_ = value;
-      }
     }
 
     /// <summary>Field number for the "user_supplied_tag" field.</summary>
@@ -1544,7 +1543,7 @@ namespace Guard_Emulator {
       }
       if (ProducingFederate != other.ProducingFederate) return false;
       if (InteractionClassName != other.InteractionClassName) return false;
-      if (!object.Equals(Parameters, other.Parameters)) return false;
+      if(!parameters_.Equals(other.parameters_)) return false;
       if (UserSuppliedTag != other.UserSuppliedTag) return false;
       return true;
     }
@@ -1554,7 +1553,7 @@ namespace Guard_Emulator {
       int hash = 1;
       if (ProducingFederate.Length != 0) hash ^= ProducingFederate.GetHashCode();
       if (InteractionClassName.Length != 0) hash ^= InteractionClassName.GetHashCode();
-      if (parameters_ != null) hash ^= Parameters.GetHashCode();
+      hash ^= parameters_.GetHashCode();
       if (UserSuppliedTag.Length != 0) hash ^= UserSuppliedTag.GetHashCode();
       return hash;
     }
@@ -1574,10 +1573,7 @@ namespace Guard_Emulator {
         output.WriteRawTag(18);
         output.WriteString(InteractionClassName);
       }
-      if (parameters_ != null) {
-        output.WriteRawTag(26);
-        output.WriteMessage(Parameters);
-      }
+      parameters_.WriteTo(output, _repeated_parameters_codec);
       if (UserSuppliedTag.Length != 0) {
         output.WriteRawTag(34);
         output.WriteBytes(UserSuppliedTag);
@@ -1593,9 +1589,7 @@ namespace Guard_Emulator {
       if (InteractionClassName.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(InteractionClassName);
       }
-      if (parameters_ != null) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Parameters);
-      }
+      size += parameters_.CalculateSize(_repeated_parameters_codec);
       if (UserSuppliedTag.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeBytesSize(UserSuppliedTag);
       }
@@ -1613,12 +1607,7 @@ namespace Guard_Emulator {
       if (other.InteractionClassName.Length != 0) {
         InteractionClassName = other.InteractionClassName;
       }
-      if (other.parameters_ != null) {
-        if (parameters_ == null) {
-          parameters_ = new global::Guard_Emulator.NamedValue();
-        }
-        Parameters.MergeFrom(other.Parameters);
-      }
+      parameters_.Add(other.parameters_);
       if (other.UserSuppliedTag.Length != 0) {
         UserSuppliedTag = other.UserSuppliedTag;
       }
@@ -1641,10 +1630,7 @@ namespace Guard_Emulator {
             break;
           }
           case 26: {
-            if (parameters_ == null) {
-              parameters_ = new global::Guard_Emulator.NamedValue();
-            }
-            input.ReadMessage(parameters_);
+            parameters_.AddEntriesFrom(input, _repeated_parameters_codec);
             break;
           }
           case 34: {

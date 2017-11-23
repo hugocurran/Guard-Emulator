@@ -167,12 +167,10 @@ namespace UnitTests
             DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
             //string instanceId = "388AED46-4033-49C5-BA0D-8B6F8865D8C1";
 
-            /*
             List<NamedValue> parameters = new List<NamedValue>();
             parameters.Add(new NamedValue { Name = "DamageState", Value = ByteString.CopyFrom("0", Encoding.Unicode) });
             parameters.Add(new NamedValue { Name = "EngineSmokeOn", Value = ByteString.CopyFrom("false", Encoding.Unicode) });
             parameters.Add(new NamedValue { Name = "AccelerationVector", Value = ByteString.CopyFrom("0.0,0.0,0.0", Encoding.Unicode) });
-            */
 
             HpsdMessage interactionMessage = new HpsdMessage()
             {
@@ -187,7 +185,7 @@ namespace UnitTests
                     //InstanceId = instanceId,
                 }
             };
-            interactionMessage.Interaction.Parameters = new NamedValue { Name = "A Thing", Value = ByteString.CopyFrom("42", Encoding.Unicode) };
+            interactionMessage.Interaction.Parameters.Add(parameters);
 
             InternalMessage parsed = HpsdParser.ParseMessage(interactionMessage);
 

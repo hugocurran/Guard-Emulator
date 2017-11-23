@@ -67,6 +67,6 @@ message ObjectDelete {
 message Interaction {
     string producing_federate      = 1; // Required
     string interaction_class_name  = 2; // Required
-    NamedValue parameters          = 3; // Required
+    repeated NamedValue parameters = 3; // Required
     bytes user_supplied_tag        = 4; // Optional
 }
