@@ -84,11 +84,11 @@ namespace Guard_Emulator
                     message = ReadMessage(up);
                     switch (osp)
                     {
-                        case OspProtocol.HPSD_ZMQ:
+                        case OspProtocol.HPSD_TCP:
                             iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
                             break;
 
-                        case OspProtocol.WebLVC_ZMQ:
+                        case OspProtocol.WebLVC_TCP:
                             iMesg = WeblvcParser.ParseMessage(message);
                             break;
                     }
@@ -106,7 +106,7 @@ namespace Guard_Emulator
                     }
                     else
                     {
-                        // Log an error message
+                        // Log an event message
                         continue;
                     }
                 }
