@@ -154,8 +154,10 @@
 				</xs:annotation>
 				<xs:simpleType>
 					<xs:restriction base="xs:string">
-						<xs:enumeration value="HPSD"/>
-						<xs:enumeration value="WebLVC"/>
+						<xs:enumeration value="HPSD_TCP"/>
+						<xs:enumeration value="HPSD_ZMQ"/>
+						<xs:enumeration value="WebLVC_TCP"/>
+						<xs:enumeration value="WebLVC_ZMQ"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>

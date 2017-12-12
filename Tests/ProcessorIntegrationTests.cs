@@ -20,7 +20,7 @@ namespace UnitTests
         string publisher = "127.0.0.1:5555";
 
         // Processor setup
-        OspProtocol protocol = OspProtocol.HPSD;
+        OspProtocol protocol = OspProtocol.HPSD_ZMQ;
 
         // Sequence number for messages
         // Note that the test harness consumes seq 0 and 1
@@ -64,7 +64,7 @@ namespace UnitTests
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
-                var processorObj = new Processor(subscriber, publisher, protocol, policy, token);
+                var processorObj = ProcessorFactory.Create(subscriber, publisher, protocol, policy, token);
             }, token);
 
             // Wait for processor thread to stabilise

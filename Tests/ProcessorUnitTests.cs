@@ -40,12 +40,12 @@ namespace UnitTests
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD;
+            OspProtocol protocol = OspProtocol.HPSD_ZMQ;
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
-                var processorObj = new Processor(subscriber, publisher, protocol, testPolicy, token);
+                var processorObj = ProcessorFactory.Create(subscriber, publisher, protocol, testPolicy, token);
             }, token);
 
             // Wait for processor thread to stabilise
@@ -141,7 +141,7 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "1");
@@ -188,7 +188,7 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "2");
@@ -245,7 +245,7 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "3");
@@ -305,7 +305,7 @@ namespace UnitTests
             intMessage.Attribute.Add("Marking");
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "3");
@@ -365,7 +365,7 @@ namespace UnitTests
             intMessage.Attribute.Add("Type");
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "NOMATCH");
@@ -424,7 +424,7 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "3");
@@ -483,7 +483,7 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
-            Processor processor = new Processor();
+            Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
             Assert.AreEqual(processor.RuleNumber, "NOMATCH");
