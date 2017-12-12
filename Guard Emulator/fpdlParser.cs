@@ -133,16 +133,12 @@ namespace Guard_Emulator
         /// </summary>
         internal string ImportPub { get; private set; }
         /// <summary>
-        /// OSP messaging protocol for the export path
+        /// OSP messaging protocol
         /// </summary>
-        internal OspProtocol ExportProtocol { get; private set; }
-        /// <summary>
-        /// OSP messaging protocol for the import path
-        /// </summary>
-        internal OspProtocol ImportProtocol { get; private set; }
+        internal OspProtocol Protocol { get; private set; }
 
         /// <summary>
-        /// Determin the OSP settings from the Deploy document
+        /// Determine the OSP settings from the Deploy document
         /// </summary>
         /// <returns>true if successful</returns>
         private bool ParseOsp()
@@ -179,6 +175,7 @@ namespace Guard_Emulator
                 interfaces.Add(iface.Element(f + "interfaceName").Value, iface.Element(f + "ipAddress").Value);
             }
 
+            OspProtocol exportProtocol = OspProtocol.INVALID, importProtocol = OspProtocol.INVALID;
             foreach (XElement osp in ospList)
             {
                 // Export
@@ -186,27 +183,61 @@ namespace Guard_Emulator
                 {
                     ExportSub = osp.Element(f + "inputPort").Value;
                     ExportPub = osp.Element(f + "outputPort").Value;
-                    if (osp.Element(f+ "protocol").Value == "HPSD")
-                        ExportProtocol = OspProtocol.HPSD;
-                    else
-                        ExportProtocol = OspProtocol.WebLVC;
+                    switch(osp.Element(f+ "protocol").Value)
+                    {
+                        case "HPSD_ZMQ":
+                            exportProtocol = OspProtocol.HPSD_ZMQ;
+                            break;
+                        case "HPSD_TCP":
+                            exportProtocol = OspProtocol.HPSD_TCP;
+                            break;
+                        case "WebLVC_ZMQ":
+                            exportProtocol = OspProtocol.WebLVC_ZMQ;
+                            break;
+                        case "WebLVC_TCP":
+                            exportProtocol = OspProtocol.WebLVC_TCP;
+                            break;
+                        default:
+                            exportProtocol = OspProtocol.INVALID;
+                            break;
+                    }
                 }
                 // Import
                 else
                 {
                     ImportSub = osp.Element(f + "inputPort").Value;
                     ImportPub = osp.Element(f + "outputPort").Value;
-                    if (osp.Element(f+ "protocol").Value == "HPSD")
-                        ImportProtocol = OspProtocol.HPSD;
-                    else
-                        ImportProtocol = OspProtocol.WebLVC;
+                    switch (osp.Element(f + "protocol").Value)
+                    {
+                        case "HPSD_ZMQ":
+                            importProtocol = OspProtocol.HPSD_ZMQ;
+                            break;
+                        case "HPSD_TCP":
+                            importProtocol = OspProtocol.HPSD_TCP;
+                            break;
+                        case "WebLVC_ZMQ":
+                            importProtocol = OspProtocol.WebLVC_ZMQ;
+                            break;
+                        case "WebLVC_TCP":
+                            importProtocol = OspProtocol.WebLVC_TCP;
+                            break;
+                        default:
+                            importProtocol = OspProtocol.INVALID;
+                            break;
+                    }
                 }
             }
-            if (ExportProtocol != ImportProtocol)
+            if ((exportProtocol == OspProtocol.INVALID) || (exportProtocol == OspProtocol.INVALID))
+            {
+                ErrorMsg = "Invalid import or export messaging protocol";
+                return false;
+            }
+            if (exportProtocol != importProtocol)
             {
                 ErrorMsg = "Mismatch between import and export messaging protocol";
                 return false;
             }
+            Protocol = exportProtocol;
             return true;
         }
 
@@ -233,7 +264,7 @@ namespace Guard_Emulator
             }
             if (sourceList == null)
             {
-                ErrorMsg = "No component defining Guard found";
+                ErrorMsg = "No component defining Guard export policy found";
                 return null;
             }
 
@@ -309,7 +340,7 @@ namespace Guard_Emulator
             }
             if (importList == null)
             {
-                ErrorMsg = "No component defining Guard found";
+                ErrorMsg = "No component defining Guard import policy found";
                 return null;
             }
 
@@ -351,54 +382,5 @@ namespace Guard_Emulator
             }
             return importPolicy.GetRuleSet();
         }
-    }
-
-    /// <summary>
-    /// Specification for the Guard ruleset
-    /// </summary>
-    internal class RuleSet
-    {
-        XDocument ruleSet;
-        XElement firstElement;
-        int counter;
-
-        /// <summary>
-        /// Constructor initialises a new ruleset
-        /// </summary>
-        /// <param name="ruleSetName">Name for the policy (eg exportPolicy)</param>
-        internal RuleSet(string ruleSetName)
-        {
-            // Initialise policy
-            ruleSet = new XDocument();
-            ruleSet.AddFirst(new XElement(ruleSetName));
-            firstElement = ruleSet.Element(ruleSetName);
-            counter = 1;
-        }
-
-        /// <summary>
-        /// Add a rule to the Guard ruleset
-        /// </summary>
-        /// <param name="fed">Federate name or *</param>
-        /// <param name="ent">EntityID or *</param>
-        /// <param name="obj">Object/Interaction classname or *</param>
-        /// <param name="attr">Attribute/Parameter name or *</param>
-        internal void Add(string fed, string ent, string obj, string attr)
-        {
-            XElement rule =
-                new XElement("rule",
-                    new XAttribute("ruleNumber", counter.ToString()),
-                    new XElement("federate", fed),
-                    new XElement("entity", ent),
-                    new XElement("objectName", obj),
-                    new XElement("attributeName", attr));
-            firstElement.Add(rule);
-            counter++;
-        }
-        
-        /// <summary>
-        /// Return the guard ruleset
-        /// </summary>
-        /// <returns>Ruleset</returns>
-        internal XDocument GetRuleSet() {  return ruleSet; }
     }
 }

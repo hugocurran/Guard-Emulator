@@ -36,7 +36,7 @@ namespace Guard_Emulator
                     var exportObj = new Processor(
                         fpdlParser.ExportSub,
                         fpdlParser.ExportPub,
-                        fpdlParser.ExportProtocol,
+                        fpdlParser.Protocol,
                         fpdlParser.ExportPolicy,
                         token);
                 }, token);
@@ -46,7 +46,7 @@ namespace Guard_Emulator
                     var importObj = new Processor(
                         fpdlParser.ImportSub,
                         fpdlParser.ImportPub,
-                        fpdlParser.ImportProtocol,
+                        fpdlParser.Protocol,
                         fpdlParser.ImportPolicy,
                         token);
                 }, token);

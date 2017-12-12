@@ -11,14 +11,7 @@ using Google.Protobuf;
 
 namespace Guard_Emulator
 {
-    /// <summary>
-    /// Support OSP messaging protocols
-    /// </summary>
-    public enum OspProtocol
-    {
-        HPSD,
-        WebLVC
-    }
+
 
     /// <summary>
     /// Guard path processor
@@ -74,11 +67,11 @@ namespace Guard_Emulator
                    
                     switch (osp)
                     {
-                        case OspProtocol.HPSD:
+                        case OspProtocol.HPSD_ZMQ:
                             iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
                             break;
 
-                        case OspProtocol.WebLVC:
+                        case OspProtocol.WebLVC_ZMQ:
                             iMesg = WeblvcParser.ParseMessage(message);
                             break;
                     }
