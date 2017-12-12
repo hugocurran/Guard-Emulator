@@ -33,7 +33,7 @@ namespace Guard_Emulator
             {
                 var exportTask = Task.Run(() =>
                 {
-                    var exportObj = new Processor(
+                    var exportObj = ProcessorFactory.Create(
                         fpdlParser.ExportSub,
                         fpdlParser.ExportPub,
                         fpdlParser.Protocol,
@@ -43,7 +43,7 @@ namespace Guard_Emulator
 
                 var importTask = Task.Run(() =>
                 {
-                    var importObj = new Processor(
+                    var importObj = ProcessorFactory.Create(
                         fpdlParser.ImportSub,
                         fpdlParser.ImportPub,
                         fpdlParser.Protocol,
@@ -55,8 +55,8 @@ namespace Guard_Emulator
             {
                 tokenSource.Cancel();
                 Task.WaitAll();
+                tokenSource.Dispose();
             }
-
         }
     }
 }

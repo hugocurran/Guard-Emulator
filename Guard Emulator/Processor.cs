@@ -16,10 +16,17 @@ namespace Guard_Emulator
     /// <summary>
     /// Guard path processor
     /// </summary>
-    public class Processor
+    public abstract class Processor
     {
         // Set a default rule match value
-        private string ruleNumber = "NOMATCH";
+        protected string ruleNumber = "NOMATCH";
+
+        // Inheritable parameters from the constructor
+        protected string subscribe;
+        protected string publish;
+        protected OspProtocol osp;
+        protected XDocument policy;
+        protected CancellationToken token;
 
         /// <summary>
         /// Rule number that matches the message (0 = status/heartbeat message)
@@ -34,60 +41,18 @@ namespace Guard_Emulator
         /// <summary>
         /// Guard path processor
         /// </summary>
-        /// <param name="subscribe">Address:Port for the subscribe socket</param>
-        /// <param name="publish">Address:Port for the publish socket</param>
+        /// <param name="subscribe">Address:Port for the subscribe (upstream) socket</param>
+        /// <param name="publish">Address:Port for the publish (downstream) socket</param>
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
         public Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
         {
-            // Create a timer to check for task cancellation
-            var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));
-            timer.Elapsed += (sender, args) => { token.ThrowIfCancellationRequested(); };
-
-            using (var poller = new NetMQPoller { timer })
-            using (var subSocket = new SubscriberSocket())
-            using (var pubSocket = new PublisherSocket())
-            {
-                subSocket.Options.ReceiveHighWatermark = 1000;
-                subSocket.Bind("tcp://" + subscribe);
-                subSocket.SubscribeToAnyTopic();
-                
-                pubSocket.Options.SendHighWatermark = 1000;
-                pubSocket.Connect("tcp://" + publish);
-                
-                // Start monitoring the cancellation token
-                poller.RunAsync();
-
-                InternalMessage iMesg = null;
-                byte[] message = null;
-                while (true)
-                {
-                    message = subSocket.ReceiveFrameBytes();
-                   
-                    switch (osp)
-                    {
-                        case OspProtocol.HPSD_ZMQ:
-                            iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
-                            break;
-
-                        case OspProtocol.WebLVC_ZMQ:
-                            iMesg = WeblvcParser.ParseMessage(message);
-                            break;
-                    }
-
-                    if (ApplyPolicy(iMesg, policy))
-                    {
-                        pubSocket.SendFrame(message);
-                        // Log an event message
-                    }
-                    else
-                    {
-                        // Log an error message
-                        continue;
-                    }
-                }
-            }
+            this.subscribe = subscribe;
+            this.publish = publish;
+            this.osp = osp;
+            this.policy = policy;
+            this.token = token;
         }
         
         /// <summary>
