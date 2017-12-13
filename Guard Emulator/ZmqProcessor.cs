@@ -24,7 +24,6 @@ namespace Guard_Emulator
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
         public ZmqProcessor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
-            : base(subscribe, publish, osp, policy, token)
         {
             // Create a timer to check for task cancellation
             var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));

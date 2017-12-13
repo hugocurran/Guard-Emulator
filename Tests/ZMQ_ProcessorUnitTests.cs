@@ -13,7 +13,7 @@ using System.Xml.Linq;
 namespace UnitTests
 {
     [TestClass]
-    public class ProcessorUnitTests
+    public class ZMQ_ProcessorUnitTests
     {
         // All testing done on loopback if
         string subscriber = "127.0.0.1:5556";
@@ -22,7 +22,7 @@ namespace UnitTests
         
 
         [TestMethod]
-        public void ProcessorBasicSocketToSocketCopy()
+        public void ProcessorBasicZMQSocketToSocketCopy()
         {
             // Create an empty policy file
             XDocument testPolicy = new XDocument();            

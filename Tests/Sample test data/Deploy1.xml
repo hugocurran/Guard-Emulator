@@ -40,12 +40,12 @@
         </rti>
       </federation>
       <osp>
-        <protocol>HPSD</protocol>
+        <protocol>HPSD_ZMQ</protocol>
         <path>ExportPath</path>
         <outputPort>127.0.0.1:5556</outputPort>
       </osp>
       <osp>
-        <protocol>HPSD</protocol>
+        <protocol>HPSD_ZMQ</protocol>
         <path>ImportPath</path>
         <inputPort>127.0.0.1:5557</inputPort>
       </osp>
@@ -208,13 +208,13 @@
 				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
 			</interface>
       <osp>
-        <protocol>HPSD</protocol>
+        <protocol>HPSD_ZMQ</protocol>
         <path>ExportPath</path>
         <inputPort>127.0.0.1:5556</inputPort>
         <outputPort>127.0.0.1:5555</outputPort>
       </osp>
       <osp>
-        <protocol>HPSD</protocol>
+        <protocol>HPSD_ZMQ</protocol>
         <path>ImportPath</path>
         <inputPort>127.0.0.1:5558</inputPort>
         <outputPort>127.0.0.1:5557</outputPort>

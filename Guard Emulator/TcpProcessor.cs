@@ -20,13 +20,12 @@ namespace Guard_Emulator
         /// <summary>
         /// Guard path processor using TCP
         /// </summary>
-        /// <param name="subscribe">Address:Port for the upstream (subscribe) socket</param>
-        /// <param name="publish">Address:Port for the downstream (publish) socket</param>
+        /// <param name="upstreamPort">Address:Port for the upstream (subscribe) socket</param>
+        /// <param name="downstreamPort">Address:Port for the downstream (publish) socket</param>
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
-        public TcpProcessor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
-            : base(subscribe, publish, osp, policy, token)
+        public TcpProcessor(string upstreamPort, string downstreamPort, OspProtocol osp, XDocument policy, CancellationToken token)
         {
             // Create a timer to check for task cancellation
             var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));
@@ -43,45 +42,50 @@ namespace Guard_Emulator
                 client.SendBufferSize = 2048;
                 client.NoDelay = true;
                 // client.SendTimeout = 100;
-                while (!client.Connected)
+                do
                 {
                     try
                     {
-                        client.Connect(EndPoint(publish));
+                        client.Connect(EndPoint(downstreamPort));
+                        if (client.Connected)
+                            continue; // Avoid the 10 second retry delay
+                        else
+                            Thread.Sleep(10000);  // Retry every 10 seconds
                     }
                     catch (SocketException e)
                     {
                         // should filter out not available errors only
                     }
-                    // Retry every 10 seconds
-                    Thread.Sleep(10000);
-                }
-                NetworkStream down = client.GetStream();
+                    
+                    
+                } while (!client.Connected);
+
+                NetworkStream downstream = client.GetStream();
 
                 // Setup connection to the upstream proxy
-                TcpListener server = new TcpListener(EndPoint(subscribe))
+                TcpListener mesgServer = new TcpListener(EndPoint(upstreamPort))
                 {
                     ExclusiveAddressUse = true
                 };
-                server.Start(1);
+                mesgServer.Start(1);
 
-                TcpClient mesgServer = null;
-                NetworkStream up = null;
+                TcpClient server = null;
+                NetworkStream upstream = null;
                 if (client.Connected)
                 {
                     // This will block until the upstream connects
-                    mesgServer = server.AcceptTcpClient();
-                    mesgServer.NoDelay = true;
-                    mesgServer.ReceiveBufferSize = 2048;
-                    up = mesgServer.GetStream();
+                    server = mesgServer.AcceptTcpClient();
+                    server.NoDelay = true;
+                    server.ReceiveBufferSize = 2048;
+                    upstream = server.GetStream();
                 }
 
                 // Message processing loop
                 InternalMessage iMesg = null;
                 byte[] message = null;
-                while (client.Connected && mesgServer.Connected)
+                while (client.Connected && server.Connected)
                 {
-                    message = ReadMessage(up);
+                    message = ReadMessage(upstream);
                     switch (osp)
                     {
                         case OspProtocol.HPSD_TCP:
@@ -95,7 +99,7 @@ namespace Guard_Emulator
 
                     if (ApplyPolicy(iMesg, policy))
                     {
-                        if (WriteMessage(message, down) == message.Length)
+                        if (WriteMessage(message, downstream) == message.Length)
                         {
                             // Log an event message
                         }
@@ -122,13 +126,22 @@ namespace Guard_Emulator
         {
             try
             {
-                // read the first 2 bytes as an int32
                 byte[] prefix = new byte[4];
-                stream.Read(prefix, 0, 4);
+                int _read = 0;
+                while (_read < 4)
+                {
+                    // read the first 4 bytes as an int32
+                    _read = _read + stream.Read(prefix, 0, 4);
+                }
                 Int32 length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(prefix, 0));
+
                 // Read the message using the length prescribed
                 byte[] message = new byte[length];
-                stream.Read(message, 0, length);
+                _read = 0;
+                while (_read < length)
+                {                    
+                    stream.Read(message, 0, length);
+                }
                 return message;
             }
             catch (IOException e)

@@ -22,21 +22,22 @@ namespace Guard_Emulator
         protected string ruleNumber = "NOMATCH";
 
         // Inheritable parameters from the constructor
-        protected string subscribe;
-        protected string publish;
-        protected OspProtocol osp;
-        protected XDocument policy;
-        protected CancellationToken token;
+        //protected string subscribe;
+        //protected string publish;
+        //protected OspProtocol osp;
+        //protected XDocument policy;
+        //protected CancellationToken token;
 
         /// <summary>
         /// Rule number that matches the message (0 = status/heartbeat message)
         /// </summary>
         public string RuleNumber {  get { return ruleNumber; } }
 
+        /*
         /// <summary>
         /// Null Processor object for unit testing only
         /// </summary>
-        internal Processor() { }
+        protected internal Processor() { }
 
         /// <summary>
         /// Guard path processor
@@ -46,14 +47,15 @@ namespace Guard_Emulator
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
-        public Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
+        protected Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
         {
-            this.subscribe = subscribe;
-            this.publish = publish;
+            // this.subscribe = subscribe;
+            // this.publish = publish;
             this.osp = osp;
             this.policy = policy;
             this.token = token;
         }
+        */
         
         /// <summary>
         /// Test the message against the policy ruleset
