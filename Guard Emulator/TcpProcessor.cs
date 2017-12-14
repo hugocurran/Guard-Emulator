@@ -20,8 +20,8 @@ namespace Guard_Emulator
         /// <summary>
         /// Guard path processor using TCP
         /// </summary>
-        /// <param name="upstreamPort">Address:Port for the upstream (subscribe) socket</param>
-        /// <param name="downstreamPort">Address:Port for the downstream (publish) socket</param>
+        /// <param name="upstreamPort">Address:Port for the upstream socket; guard listens on this</param>
+        /// <param name="downstreamPort">Address:Port for the downstream socket; guard connects to this</param>
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
@@ -47,9 +47,7 @@ namespace Guard_Emulator
                     try
                     {
                         client.Connect(EndPoint(downstreamPort));
-                        if (client.Connected)
-                            continue; // Avoid the 10 second retry delay
-                        else
+                        if (!client.Connected)
                             Thread.Sleep(10000);  // Retry every 10 seconds
                     }
                     catch (SocketException e)
@@ -140,7 +138,7 @@ namespace Guard_Emulator
                 _read = 0;
                 while (_read < length)
                 {                    
-                    stream.Read(message, 0, length);
+                    _read = _read + stream.Read(message, 0, length);
                 }
                 return message;
             }

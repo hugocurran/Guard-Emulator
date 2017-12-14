@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Tests
 {
     [TestClass]
-    class ProcessorFactoryUnitTests
+    public class ProcessorFactoryUnitTests
     {
         [TestMethod]
         public void CreateZMQProcessor()

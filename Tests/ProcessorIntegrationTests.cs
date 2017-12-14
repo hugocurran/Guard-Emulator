@@ -53,6 +53,8 @@ namespace UnitTests
             Assert.IsFalse(processorDriver(testPolicy, testMessage));
         }
 
+        #region Test Harness
+
         // Test harness
         public bool processorDriver(XDocument policy, HpsdMessage sendMessage)
         {
@@ -243,13 +245,14 @@ namespace UnitTests
                 MessageType = HpsdMessage.Types.MessageType.ObjectCreate,
                 ObjectCreate = new ObjectCreate()
                 {
-                    ProducingFederate = "Typhoon",
+                    ProducingFederate = "Typhoon",      // Invalid federate
                     InstanceId = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
                     ObjectClassName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"
                 }
             };
             return objectCreateMessage;
         }
+        #endregion
 
     }
 }

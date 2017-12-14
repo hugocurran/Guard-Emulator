@@ -80,7 +80,7 @@ namespace UnitTests
             {
                 try
                 {
-                    client.Connect(EndPoint(downstreamPort));
+                    client.Connect(EndPoint(upstreamPort));
                 }
                 catch (SocketException e)
                 {
@@ -169,7 +169,7 @@ namespace UnitTests
                 _read = 0;
                 while (_read < length)
                 {
-                    stream.Read(message, 0, length);
+                    _read = _read + stream.Read(message, 0, length);
                 }
                 return message;
             }
