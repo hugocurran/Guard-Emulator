@@ -1,8 +1,0 @@
-version: '3'
-
-services:
-  guardemulator:
-    image: guardemulator
-    build:
-      context: ./Guard Emulator
-      dockerfile: Dockerfile

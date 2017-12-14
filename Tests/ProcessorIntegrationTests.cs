@@ -43,7 +43,8 @@ namespace UnitTests
             
             Assert.IsTrue(processorDriver(testPolicy, testMessage));
         }
-
+/*
+        // Illogical test - we should not receive anything
         [TestMethod]
         public void ProcessorObjectCreateMessageNegative()
         {
@@ -52,6 +53,7 @@ namespace UnitTests
             
             Assert.IsFalse(processorDriver(testPolicy, testMessage));
         }
+        */
 
         #region Test Harness
 

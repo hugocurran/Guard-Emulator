@@ -92,7 +92,7 @@ namespace Guard_Emulator
                 string pattern = deploy.Element(f + "Deploy").Element(f + "system").Element(f + "pattern").Value;
                 if (pattern != "HTG")
                 {
-                    ErrorMsg = "Invalid pattern: " + pattern;
+                    ErrorMsg = "Invalid deplopyment pattern: " + pattern;
                     return false;
                 }
             }

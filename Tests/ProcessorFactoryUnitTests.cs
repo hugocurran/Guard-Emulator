@@ -12,6 +12,7 @@ namespace Tests
     [TestClass]
     public class ProcessorFactoryUnitTests
     {
+        /*
         [TestMethod]
         public void CreateZMQProcessor()
         {
@@ -44,5 +45,6 @@ namespace Tests
             tokenSource.Dispose();
 
         }
+        */
     }
 }
