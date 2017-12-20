@@ -27,7 +27,18 @@ namespace UnitTests
         [TestMethod]
         public void ProcessorBasicTCPSocketToSocketCopy()
         {
-            XDocument testPolicy = CreateEmptyPolicy();
+            // Create an empty policy file
+            XDocument testPolicy = new XDocument();
+            XElement emptyPolicy =
+                new XElement("exportPolicy",
+                    new XElement("rule",
+                        new XAttribute("ruleNumber", "1"),
+                        new XElement("federate", "*"),
+                        new XElement("entity", "*"),
+                        new XElement("objectName", "*"),
+                        new XElement("attributeName", "*"))
+            );
+            testPolicy.Add(emptyPolicy);
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -40,14 +51,44 @@ namespace UnitTests
                 var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
             }, token);
 
-            // Connect the Guard downstream
-            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort));
-            TcpClient server = ConnectDownstream(mesgServer);
-            NetworkStream down = server.GetStream();
+            // Wait for processor thread to stabilise
+            //Thread.Sleep(500);
+
+            // Create a downstream listener for the Guard to connect to
+            TcpListener server = new TcpListener(EndPoint(downstreamPort))
+            {
+                ExclusiveAddressUse = true
+            };
+            server.Start(1);
+
+            // This will block until the guard connects
+            var mesgServer = server.AcceptTcpClient();
+            mesgServer.NoDelay = true;
+            mesgServer.ReceiveBufferSize = 2048;
+            var down = mesgServer.GetStream();
+
 
             // Now connect to the Guard as an upstream proxy
-            TcpClient client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
+            var client = new TcpClient()
+            {
+                ExclusiveAddressUse = true,
+                SendBufferSize = 2048,
+                NoDelay = true
+            };
+            // client.SendTimeout = 100;
+            while (!client.Connected)
+            {
+                try
+                {
+                    client.Connect(EndPoint(upstreamPort));
+                }
+                catch (SocketException e)
+                {
+                    // should filter out not available errors only
+                }
+                // Retry every 10 seconds
+                Thread.Sleep(100);
+            }
             NetworkStream up = client.GetStream();
 
             // Send some test messages
@@ -67,6 +108,7 @@ namespace UnitTests
                 Assert.IsTrue(message.SequenceEqual(testData));
                 received++;
             }
+            // We expect to lose the first message!
             Assert.IsTrue(received == 25);
 
             // Tidy up by cancelling the Processor task
@@ -80,273 +122,8 @@ namespace UnitTests
                 tokenSource.Dispose();
             }
         }
-
-        [TestMethod]
-        public void TcpProcessorUpstreamFailRecover()
-        {
-            XDocument testPolicy = CreateEmptyPolicy();
-
-            // Processor must run in its own cancellable task
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
-
-            // Start the Processor thread
-            var processorTask = Task.Run(() =>
-            {
-                var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
-            }, token);
-
-            // Connect the Guard downstream
-            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
-            mesgServer.Start(1);
-            TcpClient server = ConnectDownstream(mesgServer);
-            NetworkStream down = server.GetStream();
-
-            // Now connect to the Guard as an upstream proxy
-            TcpClient client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            NetworkStream up = client.GetStream();
-
-            // Send some test messages
-            int counter = 0;
-            int received = 0;
-            byte[] testData;
-            byte[] message = null;
-            while (counter < 5)
-            {
-                testData = statusMessage(counter).ToByteArray();
-                WriteMessage(testData, up);
-                counter++;
-                Thread.Sleep(60);
-
-                message = ReadMessage(down);
-
-                Assert.IsTrue(message.SequenceEqual(testData));
-                received++;
-            }
-            Assert.IsTrue(received == 5);
-
-            // Close the upstream connection
-            client.Close();
-            up.Dispose();
-            // Wait a second so the disconnection can be detected
-            Thread.Sleep(2000);
-
-            // Downstream should still be connected
-            Assert.IsTrue(server.Connected);
-
-            // Restart the upstream
-            // Now connect to the Guard as an upstream proxy
-            client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            up = client.GetStream();
-
-            Assert.IsTrue(client.Connected);
-
-            // Send some more messages
-            counter = 0;
-            received = 0;
-            message = null;
-            while (counter < 5)
-            {
-                testData = statusMessage(counter).ToByteArray();
-                WriteMessage(testData, up);
-                counter++;
-                Thread.Sleep(60);
-
-                message = ReadMessage(down);
-
-                Assert.IsTrue(message.SequenceEqual(testData));
-                received++;
-            }
-            Assert.IsTrue(received == 5);
-
-            // Tidy up by cancelling the Processor task
-            try
-            {
-                tokenSource.Cancel();
-            }
-            catch (OperationCanceledException) { }
-            finally
-            {
-                tokenSource.Dispose();
-                server.Close();
-                client.Close();
-                up.Dispose();
-                down.Dispose();
-                mesgServer.Stop();                
-            }
-        }
-
-        [TestMethod]
-        public void TcpProcessorDownstreamFailRecover()
-        {
-            XDocument testPolicy = CreateEmptyPolicy();
-
-            // Processor must run in its own cancellable task
-            CancellationTokenSource tokenSource = new CancellationTokenSource();
-            CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
-
-            // Start the Processor thread
-            var processorTask = Task.Run(() =>
-            {
-                var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
-            }, token);
-
-            // Connect the Guard downstream
-            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
-            mesgServer.Start(1);
-            TcpClient server = ConnectDownstream(mesgServer);
-            NetworkStream down = server.GetStream();
-
-            // Now connect to the Guard as an upstream proxy
-            TcpClient client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            NetworkStream up = client.GetStream();
-
-            // Send some test messages
-            int counter = 0;
-            int received = 0;
-            byte[] testData;
-            byte[] message = null;
-            while (counter < 5)
-            {
-                testData = statusMessage(counter).ToByteArray();
-                WriteMessage(testData, up);
-                counter++;
-                Thread.Sleep(60);
-
-                message = ReadMessage(down);
-
-                Assert.IsTrue(message.SequenceEqual(testData));
-                received++;
-            }
-            Assert.IsTrue(received == 5);
-
-            // Close the downstream connection
-            server.Close();
-            down.Dispose();
-            Assert.IsFalse(server.Connected);
-            // Wait a second so the disconnection can be detected
-            Thread.Sleep(2000);
-
-            // Upstream should be disconnected
-            if (client.Client.Poll(1, SelectMode.SelectWrite))
-            {
-                client.Close();
-                up.Dispose();
-            }
-            else
-            {
-                Assert.Fail("Upstream has not disconnected");
-            }
-            // Restart the upstream
-            client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            up = client.GetStream();
-
-            // Restart the downstream
-            // Connect the Guard downstream
-            server = ConnectDownstream(mesgServer);
-            Assert.IsTrue(server.Connected);
-            down = server.GetStream();
-
-            Assert.IsTrue(client.Connected);
-
-            // Send some more messages
-            counter = 0;
-            received = 0;
-            message = null;
-            while (counter < 5)
-            {
-                testData = statusMessage(counter).ToByteArray();
-                WriteMessage(testData, up);
-                counter++;
-                Thread.Sleep(60);
-
-                message = ReadMessage(down);
-
-                Assert.IsTrue(message.SequenceEqual(testData));
-                received++;
-            }
-            Assert.IsTrue(received == 5);
-
-            // Tidy up by cancelling the Processor task
-            try
-            {
-                tokenSource.Cancel();
-            }
-            catch (OperationCanceledException) { }
-            finally
-            {
-                tokenSource.Dispose();
-                server.Close();
-                client.Close();
-                up.Dispose();
-                down.Dispose();
-                mesgServer.Stop();
-            }
-        }
-
-        private XDocument CreateEmptyPolicy()
-        {
-            // Create an empty policy file
-            XDocument testPolicy = new XDocument();
-            XElement emptyPolicy =
-                new XElement("exportPolicy",
-                    new XElement("rule",
-                        new XAttribute("ruleNumber", "1"),
-                        new XElement("federate", "*"),
-                        new XElement("entity", "*"),
-                        new XElement("objectName", "*"),
-                        new XElement("attributeName", "*"))
-            );
-            testPolicy.Add(emptyPolicy);
-            return testPolicy;
-        }
-
-        /// <summary>
-        /// Connect to the guard upstream server
-        /// </summary>
-        /// <param name="client">TcpClient reference</param>
-        /// <param name="upstreamPort">IPaddr:port the guard is listening on</param>
-        private void ConnectUpstream(TcpClient client, string upstreamPort)
-        {
-            client.ExclusiveAddressUse = true;
-            client.SendBufferSize = 8192;
-            client.NoDelay = true;
-            // client.SendTimeout = 100;
-            do
-            {
-                try
-                {
-                    client.Connect(EndPoint(upstreamPort));
-                    if (!client.Connected)
-                        Thread.Sleep(10000);  // Retry every 10 seconds
-                }
-                catch (SocketException e)
-                {
-                    // should filter out not available errors only
-                }
-            } while (!client.Connected);
-        }
-
-        /// <summary>
-        /// Connect to the Guard downstream client
-        /// </summary>
-        /// <param name="mesgServer">TcpListener reference</param>
-        /// <returns>TcpClient instance for communication with the proxy</returns>
-        private TcpClient ConnectDownstream(TcpListener mesgServer)
-        {
-            mesgServer.Server.Poll(1, SelectMode.SelectError);
-            // This will block until the client connects
-            TcpClient server = mesgServer.AcceptTcpClient();
-            server.NoDelay = true;
-            server.ReceiveBufferSize = 8192;
-            return server;
-        }
+            
+        
 
         static HpsdMessage statusMessage(int sequence)
         {

@@ -32,163 +32,87 @@ namespace Guard_Emulator
             timer.Elapsed += (sender, args) => { token.ThrowIfCancellationRequested(); };
 
             using (var poller = new NetMQPoller { timer })
+            using (var client = new TcpClient(AddressFamily.InterNetwork))
             {
                 // Start monitoring the cancellation token
                 poller.RunAsync();
 
                 // Setup connection to downstream proxy
-                TcpClient client = new TcpClient(AddressFamily.InterNetwork);
-                ConnectDownstream(client, downstreamPort);
+                client.ExclusiveAddressUse = true;
+                client.SendBufferSize = 2048;
+                client.NoDelay = true;
+                // client.SendTimeout = 100;
+                do
+                {
+                    try
+                    {
+                        client.Connect(EndPoint(downstreamPort));
+                        if (!client.Connected)
+                            Thread.Sleep(10000);  // Retry every 10 seconds
+                    }
+                    catch (SocketException e)
+                    {
+                        // should filter out not available errors only
+                    }
+                    
+                    
+                } while (!client.Connected);
+
                 NetworkStream downstream = client.GetStream();
 
-                // Setup connection to upstream proxy
-                TcpListener mesgServer = new TcpListener(EndPoint(upstreamPort)) { ExclusiveAddressUse = true };
+                // Setup connection to the upstream proxy
+                TcpListener mesgServer = new TcpListener(EndPoint(upstreamPort))
+                {
+                    ExclusiveAddressUse = true
+                };
                 mesgServer.Start(1);
-                TcpClient server = ConnectUpstream(mesgServer);
-                NetworkStream upstream = server.GetStream();
+
+                TcpClient server = null;
+                NetworkStream upstream = null;
+                if (client.Connected)
+                {
+                    // This will block until the upstream connects
+                    server = mesgServer.AcceptTcpClient();
+                    server.NoDelay = true;
+                    server.ReceiveBufferSize = 2048;
+                    upstream = server.GetStream();
+                }
 
                 // Message processing loop
                 InternalMessage iMesg = null;
                 byte[] message = null;
-                while (true)
+                while (client.Connected && server.Connected)
                 {
-                    while (client.Connected && server.Connected)
+                    message = ReadMessage(upstream);
+                    switch (osp)
                     {
-                        message = ReadMessage(upstream);
-                        if (message != null)
-                        {
-                            Console.WriteLine("Message read");
-                            switch (osp)
-                            {
-                                case OspProtocol.HPSD_TCP:
-                                    iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
-                                    break;
+                        case OspProtocol.HPSD_TCP:
+                            iMesg = HpsdParser.ParseMessage(HpsdMessage.Parser.ParseFrom(message));
+                            break;
 
-                                case OspProtocol.WebLVC_TCP:
-                                    iMesg = WeblvcParser.ParseMessage(message);
-                                    break;
-                            }
-                            if (ApplyPolicy(iMesg, policy))
-                            {
-                                if (WriteMessage(message, downstream) == message.Length)
-                                {
-                                    // Log an event message
-                                    Console.WriteLine("Message written to downstream");
-                                }
-                                else    // Write timeout returns message length == 0
-                                {
-                                    // Check we are still actually connected - should reset client.Connected state
-                                    client.Client.Poll(1, SelectMode.SelectWrite);
-                                    Console.WriteLine("Downstream Disconnected #1");
-                                    // Log an event message
-                                }
-                            }
-                            else
-                            {
-                                // Log an event message - Message does not comply with policy
-                                Console.WriteLine("Message invalid");
-                                continue;
-                            }
-                        }
-                        else  // A read timeout will bring us here
-                        {
-                            // Check we are still actually connected
-                            if (server.Client.Poll(1, SelectMode.SelectRead) && !upstream.DataAvailable)
-                            {
-                                // We have been disconnected
-                                // Log an event message
-                                Console.WriteLine("Upstream disconnected #1");
-                                server.Close(); // Dispose the old connection
-                                // Log an event message
-                            }
-                            else  // Nah - just a timeout
-                            {
-                                Console.WriteLine("Read Timeout");
-                                continue;
-                            }
-                        }
+                        case OspProtocol.WebLVC_TCP:
+                            iMesg = WeblvcParser.ParseMessage(message);
+                            break;
                     }
-                    // One of the connections has died, so reset and start again
-                    // Check the upstream first
-                    bool upstreamReconnected = false;
-                    if ((!server.Connected) || (server.Client.Poll(1, SelectMode.SelectRead) && !upstream.DataAvailable))
-                    {
-                        // If the upstream has died, keep the downstream connection and restart upstream
-                        // Log an event message
-                        Console.WriteLine("Upstream disconnected #2");
-                        server.Close(); // Dispose the old connection
-                        upstream.Dispose();
-                        server = ConnectUpstream(mesgServer);
-                        upstream = server.GetStream();
-                        upstreamReconnected = true;
-                        // Log an event message
-                    }
-                    // Check the downstream
-                    if ((!client.Connected) || (!client.Client.Poll(1, SelectMode.SelectWrite)))
-                    {
-                        // Downstream has died, close upstream and restart
-                        Console.WriteLine("Downstream disconnected #2");
-                        // Log an event message
-                        client.Close();
-                        downstream.Dispose();
-                        client = new TcpClient(AddressFamily.InterNetwork);
-                        ConnectDownstream(client, downstreamPort);
-                        downstream = client.GetStream();
 
-                        // Only restart the upstream if it has not been restarted
-                        if (!upstreamReconnected && client.Connected)
+                    if (ApplyPolicy(iMesg, policy))
+                    {
+                        if (WriteMessage(message, downstream) == message.Length)
                         {
-                            server.Close();
-                            upstream.Dispose();                        
-                            // Log an event message
-                            server = ConnectUpstream(mesgServer);
-                            upstream = server.GetStream();
                             // Log an event message
                         }
+                        else
+                        {
+                            // Log an error message
+                        }
                     }
-                }   // End of infinite loop
+                    else
+                    {
+                        // Log an event message
+                        continue;
+                    }
+                }
             }
-        }
-
-        /// <summary>
-        /// Connect to the downstream proxy
-        /// </summary>
-        /// <param name="client">TcpClient reference</param>
-        /// <param name="downstreamPort">IPaddr:port the downstream is listening on</param>
-        private void ConnectDownstream(TcpClient client, string downstreamPort)
-        {
-            client.ExclusiveAddressUse = true;
-            client.NoDelay = true;
-            client.SendTimeout = 50;  // 50 millisecond timeout on writing
-            do
-            {
-                try
-                {
-                    client.Connect(EndPoint(downstreamPort));
-                    if (!client.Connected)
-                        Thread.Sleep(10000);  // Retry every 10 seconds
-                }
-                catch (SocketException e)
-                {
-                    // should filter out not available errors only
-                }
-            } while (!client.Connected);
-            Console.WriteLine("Downstream connected");
-        }
-
-        /// <summary>
-        /// Connect to the upstream proxy
-        /// </summary>
-        /// <param name="mesgServer">TcpListener reference</param>
-        /// <returns>TcpClient instance for communication with the proxy</returns>
-        private TcpClient ConnectUpstream(TcpListener mesgServer)
-        {
-            // This will block until the upstream connects
-            TcpClient server = mesgServer.AcceptTcpClient();
-            server.NoDelay = true;
-            server.ReceiveTimeout = 1000;   //  second timeout on reads
-            Console.WriteLine("Upstream connected");
-            return server;
         }
 
         /// <summary>
@@ -198,17 +122,14 @@ namespace Guard_Emulator
         /// <returns>A message or null</returns>
         private byte[] ReadMessage(NetworkStream stream)
         {
-            // Read timout is set on the socket which will throw IOException
             try
             {
-                // read the first 4 bytes as an int32
                 byte[] prefix = new byte[4];
                 int _read = 0;
                 while (_read < 4)
-                {                    
-                    _read += stream.Read(prefix, 0, 4);
-                    if (_read == 0)  // No more data available (disconnected)
-                        throw new IOException("I/O error occurred.");
+                {
+                    // read the first 4 bytes as an int32
+                    _read = _read + stream.Read(prefix, 0, 4);
                 }
                 Int32 length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(prefix, 0));
 
@@ -217,15 +138,13 @@ namespace Guard_Emulator
                 _read = 0;
                 while (_read < length)
                 {                    
-                    _read += stream.Read(message, 0, length);
-                    if (_read == 0)  // No more data available (disconnected)
-                        throw new IOException("I/O error occurred.");
+                    _read = _read + stream.Read(message, 0, length);
                 }
                 return message;
             }
-            catch (IOException)
+            catch (IOException e)
             {
-                // Read has timed out
+                // Do something with the error message
                 return null;
             }
         }
@@ -238,7 +157,6 @@ namespace Guard_Emulator
         /// <returns>Length of message or 0 on failure</returns>
         private int WriteMessage(byte[] message, NetworkStream stream)
         {
-            // Write timeout is set on the socket which should throw an IOException
             try
             {
                 // Determine the message length
@@ -263,7 +181,7 @@ namespace Guard_Emulator
         /// <returns>IPEndpoint</returns>
         private IPEndPoint EndPoint(string addrPort)
         {
-            // addrPort comes from FPDL in the form <IP Address>:<Port>
+            // Server comes from FPDL in the form <IP Address>:<Port>
             string[] parts = addrPort.Split(":");
             IPAddress ipAddress = IPAddress.Parse(parts[0]);
             Int32 port = Convert.ToInt32(parts[1]);
