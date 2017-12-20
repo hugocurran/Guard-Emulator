@@ -41,7 +41,8 @@ namespace UnitTests
             }, token);
 
             // Connect the Guard downstream
-            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort));
+            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
+            mesgServer.Start(1);
             TcpClient server = ConnectDownstream(mesgServer);
             NetworkStream down = server.GetStream();
 
