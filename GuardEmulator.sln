@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27004.2009
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guard Emulator", "Guard Emulator\Guard Emulator.csproj", "{F154D552-453B-4B2A-801D-2062EFDFAC3F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{08ED1505-DD90-43D1-A358-B80C35FAAD34}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CDB5A1F5-A8B8-49AE-A2D1-65DAE61A6B55}"
@@ -12,20 +10,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Guard Policy.md = Guard Policy.md
 	EndProjectSection
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A9B68CA8-240E-4F52-B398-BF411D0A3CE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guard", "Guard\Guard.csproj", "{E0D65CBC-1028-47D6-A758-637EC00450B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F154D552-453B-4B2A-801D-2062EFDFAC3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F154D552-453B-4B2A-801D-2062EFDFAC3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F154D552-453B-4B2A-801D-2062EFDFAC3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F154D552-453B-4B2A-801D-2062EFDFAC3F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08ED1505-DD90-43D1-A358-B80C35FAAD34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08ED1505-DD90-43D1-A358-B80C35FAAD34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08ED1505-DD90-43D1-A358-B80C35FAAD34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{08ED1505-DD90-43D1-A358-B80C35FAAD34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9B68CA8-240E-4F52-B398-BF411D0A3CE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9B68CA8-240E-4F52-B398-BF411D0A3CE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9B68CA8-240E-4F52-B398-BF411D0A3CE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9B68CA8-240E-4F52-B398-BF411D0A3CE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0D65CBC-1028-47D6-A758-637EC00450B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0D65CBC-1028-47D6-A758-637EC00450B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0D65CBC-1028-47D6-A758-637EC00450B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0D65CBC-1028-47D6-A758-637EC00450B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
