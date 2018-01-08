@@ -12,13 +12,14 @@ namespace Guard_Emulator
     {
         static void Main(string[] args)
         {
-            if (args.Count() != 1)
+            if ((args.Count() != 1) || (args.Count() > 2))
             {
                 Console.WriteLine("Usage: Guard deployfile.xml");
                 return;
             }
 
             // Parse the policy file
+            Console.WriteLine("Loading Deploy file");
             FpdlParser fpdlParser = new FpdlParser();
             if (!fpdlParser.LoadDeployDocument(args[0]))
             {
@@ -29,32 +30,39 @@ namespace Guard_Emulator
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
+            Task[] tasks = new Task[2];
             try
             {
-                var exportTask = Task.Run(() =>
-                {
-                    var exportObj = ProcessorFactory.Create(
-                        fpdlParser.ExportSub,
-                        fpdlParser.ExportPub,
-                        fpdlParser.Protocol,
-                        fpdlParser.ExportPolicy,
-                        token);
-                }, token);
+                Console.WriteLine("Starting export task");
+                tasks.Append(Task.Run(() =>
+                        {
+                            var exportObj = ProcessorFactory.Create(
+                                fpdlParser.ExportSub,
+                                fpdlParser.ExportPub,
+                                fpdlParser.Protocol,
+                                fpdlParser.ExportPolicy,
+                                token);
+                        }, 
+                    token)
+                );
 
-                var importTask = Task.Run(() =>
-                {
-                    var importObj = ProcessorFactory.Create(
-                        fpdlParser.ImportSub,
-                        fpdlParser.ImportPub,
-                        fpdlParser.Protocol,
-                        fpdlParser.ImportPolicy,
-                        token);
-                }, token);
+                Console.WriteLine("Starting import task");
+                tasks.Append(Task.Run(() =>
+                        {
+                            var importObj = ProcessorFactory.Create(
+                                fpdlParser.ImportSub,
+                                fpdlParser.ImportPub,
+                                fpdlParser.Protocol,
+                                fpdlParser.ImportPolicy,
+                                token);
+                        }, token)
+                );
             }
             finally
             {
+                Console.WriteLine("Stopping...");
                 tokenSource.Cancel();
-                Task.WaitAll();
+                Task.WaitAll(tasks);
                 tokenSource.Dispose();
             }
         }
