@@ -55,6 +55,7 @@ namespace Guard_Emulator
                                 fpdlParser.ImportPolicy,
                                 token);
                         }, token);
+            while (true) { }
             }
             finally
             {

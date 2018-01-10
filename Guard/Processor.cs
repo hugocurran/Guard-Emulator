@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NetMQ;
-using NetMQ.Sockets;
-using System.Threading;
-using Google.Protobuf;
 
 namespace Guard_Emulator
 {
-
-
     /// <summary>
     /// Guard path processor
     /// </summary>
@@ -21,42 +12,11 @@ namespace Guard_Emulator
         // Set a default rule match value
         protected string ruleNumber = "NOMATCH";
 
-        // Inheritable parameters from the constructor
-        //protected string subscribe;
-        //protected string publish;
-        //protected OspProtocol osp;
-        //protected XDocument policy;
-        //protected CancellationToken token;
-
         /// <summary>
         /// Rule number that matches the message (0 = status/heartbeat message)
         /// </summary>
-        public string RuleNumber {  get { return ruleNumber; } }
+        public string RuleNumber { get { return ruleNumber; } }
 
-        /*
-        /// <summary>
-        /// Null Processor object for unit testing only
-        /// </summary>
-        protected internal Processor() { }
-
-        /// <summary>
-        /// Guard path processor
-        /// </summary>
-        /// <param name="subscribe">Address:Port for the subscribe (upstream) socket</param>
-        /// <param name="publish">Address:Port for the publish (downstream) socket</param>
-        /// <param name="osp">OSP message protocol</param>
-        /// <param name="policy">Policy ruleset to apply</param>
-        /// <param name="token">Cancellation token</param>
-        protected Processor(string subscribe, string publish, OspProtocol osp, XDocument policy, CancellationToken token)
-        {
-            // this.subscribe = subscribe;
-            // this.publish = publish;
-            this.osp = osp;
-            this.policy = policy;
-            this.token = token;
-        }
-        */
-        
         /// <summary>
         /// Test the message against the policy ruleset
         /// </summary>
@@ -114,7 +74,7 @@ namespace Guard_Emulator
                 objectMatches =
                     from el in entityMatches
                     where (string)el.Element("objectName") == intMessage.ObjectName
-                        select el;
+                    select el;
                 if (objectMatches.Count() == 0)
                 {
                     objectMatches =
@@ -177,6 +137,15 @@ namespace Guard_Emulator
                 }
             }
             return false;
+        }
+
+        protected string WhoAmI(XDocument policy)
+        {
+            string policyName = policy.Root.Name.LocalName;
+            if (policyName.Contains("export"))
+                 return "Export ";
+            else
+                return "Import ";
         }
     }
 }

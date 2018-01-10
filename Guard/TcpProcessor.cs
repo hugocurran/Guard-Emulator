@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 using NetMQ;
@@ -12,6 +10,7 @@ namespace Guard_Emulator
 {
     class TcpProcessor : Processor
     {
+        private string id;
         /// <summary>
         /// Null Processor object for unit testing only
         /// </summary>
@@ -27,6 +26,8 @@ namespace Guard_Emulator
         /// <param name="token">Cancellation token</param>
         public TcpProcessor(string upstreamPort, string downstreamPort, OspProtocol osp, XDocument policy, CancellationToken token)
         {
+            // Get identity
+            id = WhoAmI(policy);
             // Create a timer to check for task cancellation
             var timer = new NetMQTimer(TimeSpan.FromMilliseconds(500));
             timer.Elapsed += (sender, args) => { token.ThrowIfCancellationRequested(); };
@@ -36,21 +37,23 @@ namespace Guard_Emulator
                 // Start monitoring the cancellation token
                 poller.RunAsync();
 
-                // Setup connection to downstream proxy
-                //TcpClient client = new TcpClient(AddressFamily.InterNetwork);
-                TcpClient client = ConnectDownstream(downstreamPort);
-                //ConnectDownstream(client, downstreamPort);
-                NetworkStream downstream = client.GetStream();
-
                 // Setup connection to upstream proxy
                 TcpListener mesgServer = new TcpListener(EndPoint(upstreamPort)) { ExclusiveAddressUse = true };
+                Console.WriteLine(id + "Listening on {0}", upstreamPort);
                 mesgServer.Start(1);
                 TcpClient server = ConnectUpstream(mesgServer);
+                Console.WriteLine(id + "Server connected on: {0}", upstreamPort);
                 NetworkStream upstream = server.GetStream();
+
+                // Setup connection to downstream proxy
+                Console.WriteLine(id + "Connecting to {0}", downstreamPort);
+                TcpClient client = ConnectDownstream(downstreamPort);
+                NetworkStream downstream = client.GetStream();
 
                 // Message processing loop
                 InternalMessage iMesg = null;
                 byte[] message = null;
+                Console.WriteLine(id + "About to start the message loop...");
                 while (true)
                 {
                     while (client.Connected && server.Connected)
@@ -58,7 +61,7 @@ namespace Guard_Emulator
                         message = ReadMessage(upstream);
                         if (message != null)
                         {
-                            Console.WriteLine("Message read");
+                            Console.WriteLine(id + "Message read from: {0}", upstreamPort);
                             switch (osp)
                             {
                                 case OspProtocol.HPSD_TCP:
@@ -69,42 +72,44 @@ namespace Guard_Emulator
                                     iMesg = WeblvcParser.ParseMessage(message);
                                     break;
                             }
+                            Console.WriteLine(id + "Sequence: {0}, Type: {1}", iMesg.SequenceNumber, iMesg.Type);
                             if (ApplyPolicy(iMesg, policy))
                             {
+                                Console.WriteLine("Message {0} valid:  Rule={1}", iMesg.SequenceNumber, ruleNumber);
                                 if (WriteMessage(message, downstream) == message.Length)
                                 {
                                     // Log an event message
-                                    Console.WriteLine("Message written to downstream");
+                                    Console.WriteLine(id + "Message written to downstream: {0}", downstreamPort);
                                 }
                                 else    // Write timeout returns message length == 0
                                 {
                                     // Check we are still actually connected - should reset client.Connected state
                                     client.Client.Poll(1, SelectMode.SelectWrite);
-                                    Console.WriteLine("Downstream Disconnected #1");
+                                    Console.WriteLine(id + "Downstream Disconnected #1");
                                     // Log an event message
                                 }
                             }
                             else
                             {
                                 // Log an event message - Message does not comply with policy
-                                Console.WriteLine("Message invalid");
+                                Console.WriteLine(id + "Message {0} invalid", iMesg.SequenceNumber);
                                 continue;
                             }
                         }
-                        else  // A read timeout will bring us here
+                        else  // A read timeout will put us here
                         {
                             // Check we are still actually connected
                             if (server.Client.Poll(1, SelectMode.SelectRead) && !upstream.DataAvailable)
                             {
                                 // We have been disconnected
                                 // Log an event message
-                                Console.WriteLine("Upstream disconnected #1");
+                                Console.WriteLine(id + "Upstream disconnected #1");
                                 server.Close(); // Dispose the old connection
                                 // Log an event message
                             }
                             else  // Nah - just a timeout
                             {
-                                Console.WriteLine("Read Timeout");
+                                Console.WriteLine(id + "Read Timeout");
                                 continue;
                             }
                         }
@@ -116,7 +121,7 @@ namespace Guard_Emulator
                     {
                         // If the upstream has died, keep the downstream connection and restart upstream
                         // Log an event message
-                        Console.WriteLine("Upstream disconnected #2");
+                        Console.WriteLine(id + "Upstream disconnected #2");
                         server.Close(); // Dispose the old connection
                         upstream.Dispose();
                         server = ConnectUpstream(mesgServer);
@@ -128,7 +133,7 @@ namespace Guard_Emulator
                     if ((!client.Connected) || (!client.Client.Poll(1, SelectMode.SelectWrite)))
                     {
                         // Downstream has died, close upstream and restart
-                        Console.WriteLine("Downstream disconnected #2");
+                        Console.WriteLine(id + "Downstream disconnected #2");
                         // Log an event message
                         client.Close();
                         downstream.Dispose();
@@ -143,6 +148,7 @@ namespace Guard_Emulator
                             // Log an event message
                             server = ConnectUpstream(mesgServer);
                             upstream = server.GetStream();
+                            Console.WriteLine(id + "Server connected on: {0}", upstreamPort);
                             // Log an event message
                         }
                     }
@@ -165,18 +171,17 @@ namespace Guard_Emulator
                 {
                     client = new TcpClient(AddressFamily.InterNetwork);
                     client.Connect(EndPoint(downstreamPort));
-                    if (!client.Connected)
-                        Thread.Sleep(10000);  // Retry every 10 seconds
+                    Console.WriteLine(id + "Connect call returned {0}", downstreamPort);
                 }
                 catch (SocketException e)
                 {
+                    Console.WriteLine(id + "loop exception: {0}", e.Message);
                     // should filter out not available errors only
+                    Thread.Sleep(10000);  // Retry every 10 seconds
                 }
             } while (!client.Connected);
-            client.ExclusiveAddressUse = true;
             client.NoDelay = true;
-            client.SendTimeout = 50;  // 50 millisecond timeout on writing
-            Console.WriteLine("Downstream connected");
+            Console.WriteLine(id + "Downstream connected: {0}", downstreamPort);
             return client;
         }
 
@@ -191,7 +196,6 @@ namespace Guard_Emulator
             TcpClient server = mesgServer.AcceptTcpClient();
             server.NoDelay = true;
             server.ReceiveTimeout = 1000;   //  second timeout on reads
-            Console.WriteLine("Upstream connected");
             return server;
         }
 
@@ -212,7 +216,7 @@ namespace Guard_Emulator
                 {                    
                     _read += stream.Read(prefix, 0, 4);
                     if (_read == 0)  // No more data available (disconnected)
-                        throw new IOException("I/O error occurred.");
+                        throw new IOException(id + "I/O error occurred.");
                 }
                 Int32 length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(prefix, 0));
 
@@ -223,7 +227,7 @@ namespace Guard_Emulator
                 {                    
                     _read += stream.Read(message, 0, length);
                     if (_read == 0)  // No more data available (disconnected)
-                        throw new IOException("I/O error occurred.");
+                        throw new IOException(id + "I/O error occurred.");
                 }
                 return message;
             }
@@ -253,7 +257,7 @@ namespace Guard_Emulator
                 stream.Write(message, 0, message.Length);
                 return message.Length;
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 // Error message needed
                 return 0;
