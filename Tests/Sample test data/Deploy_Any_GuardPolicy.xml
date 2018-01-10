@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <!---><Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd"> -->
   <configMgmt>
@@ -201,23 +201,23 @@
     <component componentID="ED425374-5626-4773-8D5E-C2EBE683F632" componentType="Guard">
       <interface>
         <interfaceName>HighNetwork</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
+        <ipAddress netPrefix="24">20.20.20.193</ipAddress>
       </interface>
       <interface>
         <interfaceName>LowNetwork</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
+        <ipAddress netPrefix="24">40.40.40.193</ipAddress>
       </interface>
       <osp>
-        <protocol>HPSD_ZMQ</protocol>
+        <protocol>HPSD_TCP</protocol>
         <path>ExportPath</path>
-        <inputPort>127.0.0.1:5556</inputPort>
-        <outputPort>127.0.0.1:5555</outputPort>
+        <inputPort>20.20.20.193:8100</inputPort>
+        <outputPort>40.40.40.21:8100</outputPort>
       </osp>
       <osp>
-        <protocol>HPSD_ZMQ</protocol>
+        <protocol>HPSD_TCP</protocol>
         <path>ImportPath</path>
-        <inputPort>127.0.0.1:5558</inputPort>
-        <outputPort>127.0.0.1:5557</outputPort>
+        <inputPort>40.40.40.193:8100</inputPort>
+        <outputPort>20.20.20.31:8100</outputPort>
       </osp>
       <export>
         <source>

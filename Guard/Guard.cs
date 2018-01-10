@@ -34,7 +34,7 @@ namespace Guard_Emulator
             try
             {
                 Console.WriteLine("Starting export task");
-                tasks.Append(Task.Run(() =>
+                tasks[0] = Task.Run(() =>
                         {
                             var exportObj = ProcessorFactory.Create(
                                 fpdlParser.ExportSub,
@@ -43,11 +43,10 @@ namespace Guard_Emulator
                                 fpdlParser.ExportPolicy,
                                 token);
                         }, 
-                    token)
-                );
+                    token);
 
                 Console.WriteLine("Starting import task");
-                tasks.Append(Task.Run(() =>
+                tasks[1] = Task.Run(() =>
                         {
                             var importObj = ProcessorFactory.Create(
                                 fpdlParser.ImportSub,
@@ -55,8 +54,7 @@ namespace Guard_Emulator
                                 fpdlParser.Protocol,
                                 fpdlParser.ImportPolicy,
                                 token);
-                        }, token)
-                );
+                        }, token);
             }
             finally
             {

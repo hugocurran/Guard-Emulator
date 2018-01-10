@@ -37,8 +37,9 @@ namespace Guard_Emulator
                 poller.RunAsync();
 
                 // Setup connection to downstream proxy
-                TcpClient client = new TcpClient(AddressFamily.InterNetwork);
-                ConnectDownstream(client, downstreamPort);
+                //TcpClient client = new TcpClient(AddressFamily.InterNetwork);
+                TcpClient client = ConnectDownstream(downstreamPort);
+                //ConnectDownstream(client, downstreamPort);
                 NetworkStream downstream = client.GetStream();
 
                 // Setup connection to upstream proxy
@@ -131,8 +132,7 @@ namespace Guard_Emulator
                         // Log an event message
                         client.Close();
                         downstream.Dispose();
-                        client = new TcpClient(AddressFamily.InterNetwork);
-                        ConnectDownstream(client, downstreamPort);
+                        client = ConnectDownstream(downstreamPort);
                         downstream = client.GetStream();
 
                         // Only restart the upstream if it has not been restarted
@@ -155,15 +155,15 @@ namespace Guard_Emulator
         /// </summary>
         /// <param name="client">TcpClient reference</param>
         /// <param name="downstreamPort">IPaddr:port the downstream is listening on</param>
-        private void ConnectDownstream(TcpClient client, string downstreamPort)
+        //private void ConnectDownstream(TcpClient client, string downstreamPort)
+        private TcpClient ConnectDownstream(string downstreamPort)
         {
-            client.ExclusiveAddressUse = true;
-            client.NoDelay = true;
-            client.SendTimeout = 50;  // 50 millisecond timeout on writing
+            TcpClient client = null;
             do
             {
                 try
                 {
+                    client = new TcpClient(AddressFamily.InterNetwork);
                     client.Connect(EndPoint(downstreamPort));
                     if (!client.Connected)
                         Thread.Sleep(10000);  // Retry every 10 seconds
@@ -173,7 +173,11 @@ namespace Guard_Emulator
                     // should filter out not available errors only
                 }
             } while (!client.Connected);
+            client.ExclusiveAddressUse = true;
+            client.NoDelay = true;
+            client.SendTimeout = 50;  // 50 millisecond timeout on writing
             Console.WriteLine("Downstream connected");
+            return client;
         }
 
         /// <summary>
