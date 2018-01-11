@@ -207,6 +207,13 @@
 				<interfaceName>LowNetwork</interfaceName>
 				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
 			</interface>
+      <host>
+          <hostName>Guard</hostName>
+          <logging>
+            <server protocol="syslog" transport="UDP" port="514">10.10.10.12</server>
+          </logging>
+          <time protocol="ntp">10.10.10.12</time>
+      </host>
       <osp>
         <protocol>HPSD_ZMQ</protocol>
         <path>ExportPath</path>

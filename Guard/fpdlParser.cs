@@ -80,8 +80,8 @@ namespace Guard_Emulator
             {
                 deploy = XDocument.Load(fileName);
 
-                string designDocReference = deploy.Element(f + "Deploy").Element(f + "designDocReference").Value;
-                Logger.Log("Loaded Deploy File with Design Document Reference: " + designDocReference);
+                DesignDocReference = deploy.Element(f + "Deploy").Element(f + "designDocReference").Value;
+                //Logger.Log("Loaded Deploy File with Design Document Reference: " + designDocReference);
                 
                 string systemType = deploy.Element(f + "Deploy").Element(f + "system").Attribute("systemType").Value;
                 if (systemType != "Gateway")
@@ -92,7 +92,7 @@ namespace Guard_Emulator
                 string pattern = deploy.Element(f + "Deploy").Element(f + "system").Element(f + "pattern").Value;
                 if (pattern != "HTG")
                 {
-                    ErrorMsg = "Invalid deplopyment pattern: " + pattern;
+                    ErrorMsg = "Invalid deployment pattern: " + pattern;
                     return false;
                 }
             }
@@ -101,7 +101,7 @@ namespace Guard_Emulator
                 ErrorMsg = e.Message;
                 return false;
             }
-            return (ParseOsp());
+            return (ParseLogger() && ParseOsp());
         }
 
         /// <summary>
@@ -136,6 +136,36 @@ namespace Guard_Emulator
         /// OSP messaging protocol
         /// </summary>
         internal OspProtocol Protocol { get; private set; }
+
+        internal string DesignDocReference { get; private set; }
+
+        internal string SyslogServerIp { get; private set; }
+
+        private bool ParseLogger()
+        {
+            // Extract Logger settings from the deploy doc
+            IEnumerable<XElement> componentList = deploy.Element(f + "Deploy").Element(f + "system").Elements(f + "component");
+
+            XElement host = null;
+            foreach (XElement component in componentList)
+            {
+                if (component.Attribute("componentType").Value == "Guard")
+                {
+                    host = component.Element(f + "host");  // There should only be one - perhaps test?
+                    break;
+                }
+            }
+            if (host == null)
+            {
+                ErrorMsg = "Invalid component specification for Guard (missing Host config)";
+                return false;
+            }
+
+            // We are currently only interested in logging...(should check the attributes!!)
+            SyslogServerIp = host.Element(f + "logging").Element(f + "server").Value;
+
+            return true;
+        }
 
         /// <summary>
         /// Determine the OSP settings from the Deploy document

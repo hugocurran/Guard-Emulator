@@ -27,6 +27,10 @@ namespace Guard_Emulator
                 return;
             }
 
+            // Initialise logging
+            Logger logger = Logger.Instance;
+            logger.Initialise(fpdlParser.SyslogServerIp);
+
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;

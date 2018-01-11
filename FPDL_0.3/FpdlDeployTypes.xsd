@@ -287,7 +287,17 @@
 									<xs:extension base="fpdl:ipv4AddressPattern">
 										<xs:attribute name="protocol" type="xs:string" use="optional" default="syslog">
 											<xs:annotation>
-												<xs:documentation>Logging protocol default syslog)</xs:documentation>
+												<xs:documentation>Logging protocol (default syslog)</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="transport" type="xs:string" use="optional" default="UDP">
+											<xs:annotation>
+												<xs:documentation>Transport protocol (default UDP)</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="port" type="xs:int" use="optional" default="514">
+											<xs:annotation>
+												<xs:documentation>Port (default 514)</xs:documentation>
 											</xs:annotation>
 										</xs:attribute>
 									</xs:extension>
@@ -307,6 +317,16 @@
 										<xs:attribute name="protocol" use="optional" default="NTP">
 											<xs:annotation>
 												<xs:documentation>Time protocol (default NTP)</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="transport" type="xs:string" use="optional" default="UDP">
+											<xs:annotation>
+												<xs:documentation>Transport protocol (default UDP)</xs:documentation>
+											</xs:annotation>
+										</xs:attribute>
+										<xs:attribute name="port" type="xs:int" use="optional" default="123">
+											<xs:annotation>
+												<xs:documentation>Port (default 123) </xs:documentation>
 											</xs:annotation>
 										</xs:attribute>
 									</xs:extension>

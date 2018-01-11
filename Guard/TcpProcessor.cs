@@ -24,7 +24,7 @@ namespace Guard_Emulator
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
-        public TcpProcessor(string upstreamPort, string downstreamPort, OspProtocol osp, XDocument policy, CancellationToken token)
+        public TcpProcessor(string upstreamPort, string downstreamPort, OspProtocol osp, XDocument policy, CancellationToken token) : base()
         {
             // Get identity
             id = WhoAmI(policy);
@@ -39,13 +39,16 @@ namespace Guard_Emulator
 
                 // Setup connection to upstream proxy
                 TcpListener mesgServer = new TcpListener(EndPoint(upstreamPort)) { ExclusiveAddressUse = true };
+                logger.Log(Level.Information, id + "Listening on " + upstreamPort);
                 Console.WriteLine(id + "Listening on {0}", upstreamPort);
                 mesgServer.Start(1);
                 TcpClient server = ConnectUpstream(mesgServer);
+                logger.Log(Level.Information, id + "Server connected on " + upstreamPort);
                 Console.WriteLine(id + "Server connected on: {0}", upstreamPort);
                 NetworkStream upstream = server.GetStream();
 
                 // Setup connection to downstream proxy
+                logger.Log(Level.Information, id + "Connecting to " + downstreamPort);
                 Console.WriteLine(id + "Connecting to {0}", downstreamPort);
                 TcpClient client = ConnectDownstream(downstreamPort);
                 NetworkStream downstream = client.GetStream();
@@ -53,6 +56,7 @@ namespace Guard_Emulator
                 // Message processing loop
                 InternalMessage iMesg = null;
                 byte[] message = null;
+                logger.Log(Level.Information, id + "About to start the message loop...");
                 Console.WriteLine(id + "About to start the message loop...");
                 while (true)
                 {
@@ -72,9 +76,11 @@ namespace Guard_Emulator
                                     iMesg = WeblvcParser.ParseMessage(message);
                                     break;
                             }
+                            logger.Log(Level.Information, id + "Message Sequence: " + iMesg.SequenceNumber + "Type: " + iMesg.Type);
                             Console.WriteLine(id + "Sequence: {0}, Type: {1}", iMesg.SequenceNumber, iMesg.Type);
                             if (ApplyPolicy(iMesg, policy))
                             {
+                                logger.Log(Level.Information, id + "Valid message Sequence: " + iMesg.SequenceNumber + "Rule: " + ruleNumber);
                                 Console.WriteLine("Message {0} valid:  Rule={1}", iMesg.SequenceNumber, ruleNumber);
                                 if (WriteMessage(message, downstream) == message.Length)
                                 {
@@ -92,6 +98,7 @@ namespace Guard_Emulator
                             else
                             {
                                 // Log an event message - Message does not comply with policy
+                                logger.Log(Level.Information, id + "Invalid message Sequence: " + iMesg.SequenceNumber);
                                 Console.WriteLine(id + "Message {0} invalid", iMesg.SequenceNumber);
                                 continue;
                             }

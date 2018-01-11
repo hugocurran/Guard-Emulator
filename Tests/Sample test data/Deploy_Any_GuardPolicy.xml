@@ -207,6 +207,13 @@
         <interfaceName>LowNetwork</interfaceName>
         <ipAddress netPrefix="24">40.40.40.193</ipAddress>
       </interface>
+      <host>
+        <hostName>Guard</hostName>
+        <logging>
+          <server protocol="syslog" transport="UDP" port="514">10.10.10.12</server>
+        </logging>
+        <time protocol="ntp">10.10.10.12</time>
+      </host>
       <osp>
         <protocol>HPSD_TCP</protocol>
         <path>ExportPath</path>

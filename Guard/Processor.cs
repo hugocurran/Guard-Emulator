@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
@@ -17,6 +18,14 @@ namespace Guard_Emulator
         /// </summary>
         public string RuleNumber { get { return ruleNumber; } }
 
+        protected Logger logger;
+        protected Processor()
+        {
+            logger = Logger.Instance;
+            if (!logger.IsInitialised)
+                throw new Exception("Logger has not been initialised");
+        }
+        
         /// <summary>
         /// Test the message against the policy ruleset
         /// </summary>
