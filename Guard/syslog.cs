@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Guard_Emulator
 {
     /// <summary>
-    /// Syslog Level
+    /// Syslog Level - per RFC 3164
     /// </summary>
     public enum Level
     {
@@ -23,7 +23,7 @@ namespace Guard_Emulator
     }
 
     /// <summary>
-    /// Syslog Facility
+    /// Syslog Facility - per RFC 3164
     /// </summary>
     public enum Facility
     {
@@ -37,14 +37,16 @@ namespace Guard_Emulator
         News = 7,
         UUCP = 8,
         Cron = 9,
-        Local0 = 10,
-        Local1 = 11,
-        Local2 = 12,
-        Local3 = 13,
-        Local4 = 14,
-        Local5 = 15,
-        Local6 = 16,
-        Local7 = 17
+        AuthPriv = 10,
+        FTP = 11,
+        Local0 = 16,
+        Local1 = 17,
+        Local2 = 18,
+        Local3 = 19,
+        Local4 = 20,
+        Local5 = 21,
+        Local6 = 22,
+        Local7 = 23
     }
 
     /// <summary>

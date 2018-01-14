@@ -29,7 +29,7 @@ namespace Guard_Emulator
 
             // Initialise logging
             Logger logger = Logger.Instance;
-            logger.Initialise(fpdlParser.SyslogServerIp);
+            logger.Initialise(Facility.Local0, fpdlParser.SyslogServerIp);
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
@@ -37,6 +37,7 @@ namespace Guard_Emulator
             Task[] tasks = new Task[2];
             try
             {
+                logger.Information("Starting export task");
                 Console.WriteLine("Starting export task");
                 tasks[0] = Task.Run(() =>
                         {
@@ -49,6 +50,7 @@ namespace Guard_Emulator
                         }, 
                     token);
 
+                logger.Information("Starting import task");
                 Console.WriteLine("Starting import task");
                 tasks[1] = Task.Run(() =>
                         {
@@ -63,6 +65,7 @@ namespace Guard_Emulator
             }
             finally
             {
+                logger.Information("Stopping");
                 Console.WriteLine("Stopping...");
                 tokenSource.Cancel();
                 Task.WaitAll(tasks);
