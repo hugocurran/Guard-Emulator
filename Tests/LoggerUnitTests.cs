@@ -69,7 +69,7 @@ namespace UnitTests
             // Extract the message text
             string[] content = message.Split(' ');
 
-            Assert.AreEqual("Test Message", content[4] + " " + content[5]);
+            Assert.AreEqual("guard: Test Message", content[4] + " " + content[5] + " " + content[6]);
         } 
     }
 }

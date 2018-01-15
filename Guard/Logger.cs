@@ -12,6 +12,7 @@ namespace Guard_Emulator
     {
         private static Logger instance = null;
         private Facility facility;
+        private string process;
         private SyslogClient syslog;
 
         public bool IsInitialised = false;
@@ -37,11 +38,12 @@ namespace Guard_Emulator
         /// <param name="facility">Default facility</param>
         /// <param name="logServerIp">IP address of the syslog server</param>
         /// <param name="logServerPort">UDP port of the syslog server</param>
-        public void Initialise(Facility facility, string logServerIp, int logServerPort = 514)
+        public void Initialise(Facility facility, string logServerIp, int logServerPort = 514, string process = "guard")
         {
             if (!IsInitialised)
             {
                 this.facility = facility;
+                this.process = process;
                 syslog = new SyslogClient(logServerIp, logServerPort);
                 IsInitialised = true;
             }
@@ -137,6 +139,7 @@ namespace Guard_Emulator
         /// <returns></returns>
         public async Task Log(Facility facility, Level level, string message)
         {
+            message = process + ": " + message;
             await syslog.SendAsync(new SyslogMessage((int)facility, (int)level, message));           
         }
     }
