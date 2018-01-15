@@ -332,7 +332,7 @@ namespace UnitTests
                     if (!client.Connected)
                         Thread.Sleep(10000);  // Retry every 10 seconds
                 }
-                catch (SocketException e)
+                catch (SocketException)
                 {
                     // should filter out not available errors only
                 }
@@ -402,7 +402,7 @@ namespace UnitTests
                 }
                 return message;
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 // Do something with the error message
                 return null;
@@ -427,7 +427,7 @@ namespace UnitTests
                 stream.Write(message, 0, message.Length);
                 return message.Length;
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 // Error message needed
                 return 0;
