@@ -19,6 +19,7 @@ namespace Guard_Emulator
         public string RuleNumber { get { return ruleNumber; } }
 
         protected Logger logger;
+        protected string id;
         protected Processor()
         {
             logger = Logger.Instance;

@@ -15,9 +15,13 @@ namespace Guard_Emulator
         private string process;
         private SyslogClient syslog;
 
-        public bool IsInitialised = false;
+        public bool IsInitialised { get; private set; }
 
-        private Logger() { }
+        // Singleton private constructor
+        private Logger()
+        {
+            IsInitialised = false;
+        }
 
         /// <summary>
         /// Reference to the Logger
@@ -139,6 +143,9 @@ namespace Guard_Emulator
         /// <returns></returns>
         public async Task Log(Facility facility, Level level, string message)
         {
+#if DEBUG 
+            Console.WriteLine(message);
+#endif
             message = process + ": " + message;
             await syslog.SendAsync(new SyslogMessage((int)facility, (int)level, message));           
         }

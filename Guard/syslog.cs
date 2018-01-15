@@ -112,7 +112,7 @@ namespace Guard_Emulator
         {
             int priority = message.Facility * 8 + message.Level;
 
-            string msg = System.String.Format("<{0}>{1} {2} {3}",
+            string msg = String.Format("<{0}>{1} {2} {3}",
                                               priority,
                                               DateTime.Now.ToString("MMM dd HH:mm:ss"),
                                               ipLocalEndpoint.Address.ToString(),

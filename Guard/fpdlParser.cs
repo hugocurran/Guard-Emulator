@@ -1,13 +1,8 @@
-﻿using System;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Schema;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Xml.XPath;
+using System.Runtime.CompilerServices;
+using System.Xml.Linq;
 
 [assembly: InternalsVisibleTo("Tests")]
 

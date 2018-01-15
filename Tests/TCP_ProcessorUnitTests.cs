@@ -34,11 +34,20 @@ namespace UnitTests
             CancellationToken token = tokenSource.Token;
             OspProtocol protocol = OspProtocol.HPSD_TCP;
 
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
+
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
                 var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
             }, token);
+
+            // Now connect to the Guard as an upstream proxy
+            TcpClient client = new TcpClient();
+            ConnectUpstream(client, upstreamPort);
+            NetworkStream up = client.GetStream();
 
             // Connect the Guard downstream
             TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
@@ -46,10 +55,7 @@ namespace UnitTests
             TcpClient server = ConnectDownstream(mesgServer);
             NetworkStream down = server.GetStream();
 
-            // Now connect to the Guard as an upstream proxy
-            TcpClient client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            NetworkStream up = client.GetStream();
+
 
             // Send some test messages
             int counter = 0;

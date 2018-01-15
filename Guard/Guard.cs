@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,6 +28,8 @@ namespace Guard_Emulator
             Logger logger = Logger.Instance;
             logger.Initialise(Facility.Local0, fpdlParser.SyslogServerIp);
 
+            logger.Information("Loaded Deploy File: " + args[0] + ". Design Document Reference: " + fpdlParser.DesignDocReference);
+
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
@@ -38,7 +37,6 @@ namespace Guard_Emulator
             try
             {
                 logger.Information("Starting export task");
-                Console.WriteLine("Starting export task");
                 tasks[0] = Task.Run(() =>
                         {
                             var exportObj = ProcessorFactory.Create(
@@ -51,7 +49,6 @@ namespace Guard_Emulator
                     token);
 
                 logger.Information("Starting import task");
-                Console.WriteLine("Starting import task");
                 tasks[1] = Task.Run(() =>
                         {
                             var importObj = ProcessorFactory.Create(
@@ -66,7 +63,6 @@ namespace Guard_Emulator
             finally
             {
                 logger.Information("Stopping");
-                Console.WriteLine("Stopping...");
                 tokenSource.Cancel();
                 Task.WaitAll(tasks);
                 tokenSource.Dispose();

@@ -37,6 +37,10 @@ namespace UnitTests
             );
             testPolicy.Add(emptyPolicy);
 
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
+
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
@@ -141,6 +145,9 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -188,6 +195,9 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -245,6 +255,9 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -305,6 +318,9 @@ namespace UnitTests
             intMessage.Attribute.Add("Marking");
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -365,6 +381,9 @@ namespace UnitTests
             intMessage.Attribute.Add("Type");
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
@@ -424,6 +443,9 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -483,6 +505,9 @@ namespace UnitTests
             };
 
             // Create a 'null' processor for testing
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
             Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
