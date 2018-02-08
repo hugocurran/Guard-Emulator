@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Json;
-//using Newtonsoft.Json;
 
 namespace Guard_Emulator
 {
@@ -49,9 +48,7 @@ namespace Guard_Emulator
                     parsedMessage.Type = MessageType.ObjectUpdate;
                     parsedMessage.Federate = cdsAdmin["Origin"];
                     parsedMessage.EntityID = cdsAdmin["ObjectId"];
-                    Console.WriteLine("Update: ");
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
-                    Console.WriteLine("Object: " + parsedMessage.ObjectName);
                     JsonObject attributes = (JsonObject)lvcMessage["Attributes"];
                     foreach (var attrib in attributes)
                     {

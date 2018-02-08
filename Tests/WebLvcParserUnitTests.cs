@@ -16,8 +16,7 @@ namespace UnitTests
         [TestMethod]
         public void WeblvcObjectCreateMessageParsing()
         {
-            string jsonString = "{ \"cdsAdmin\":{ \"Format\":\"JSON\",\"ObjectId\":\"VRF131073:2\",\"ObjectModelId\":\"00000000-0000-0000-0000-000000000000\",\"ObjectModelPath\":\"HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle\",\"Operation\":3,\"Origin\":\"Test\",\"PolicyId\":\"52769b0b-a240-45e2-972c-ed3b6307f71d\",\"Sequence\":2}}";
-        //string jsonString = "{ \"cdsAdmin\":{ \"Format\":\"JSON\",\"ObjectId\":\"VRF262147:167\",\"ObjectModelId\":\"6237bd4c-0601-40cd-9a03-44bc247d8498\",\"ObjectModelPath\":\"HLAobjectRoot.BaseEntity.PhysicalEntity.Platform\",\"Operation\":2,\"Origin\":\"Test\",\"PolicyId\":\"f9771db7-20b0-4e4b-8e78-26cbe6dab1d0\",\"Sequence\":4744} }";
+        string jsonString = "{ \"cdsAdmin\":{ \"Format\":\"JSON\",\"ObjectId\":\"VRF262147:167\",\"ObjectModelId\":\"6237bd4c-0601-40cd-9a03-44bc247d8498\",\"ObjectModelPath\":\"HLAobjectRoot.BaseEntity.PhysicalEntity.Platform\",\"Operation\":2,\"Origin\":\"Test\",\"PolicyId\":\"f9771db7-20b0-4e4b-8e78-26cbe6dab1d0\",\"Sequence\":4744} }";
 
         InternalMessage parsed = WeblvcParser.ParseMessage(Encoding.ASCII.GetBytes(jsonString));
 

@@ -36,18 +36,15 @@ namespace Guard_Emulator
             using (var subSocket = new SubscriberSocket())
             using (var pubSocket = new PublisherSocket())
             {
-                //subSocket.Options.ReceiveHighWatermark = 1000;
-                //subSocket.Bind("tcp://" + subscribe);
                 subSocket.Connect("tcp://" + subscribe);
-
                 subSocket.SubscribeToAnyTopic();
                 logger.Information(id + "Connected to subscribe socket: " + subscribe);
 
                 pubSocket.Options.ReceiveHighWatermark = 1000;
                 pubSocket.Bind("tcp://" + publish);
                 pubSocket.Options.SendHighWatermark = 1000;
-                //pubSocket.Connect("tcp://" + publish);
                 logger.Information(id + "Connected to publish socket: " + publish);
+
                 // Start monitoring the cancellation token
                 poller.RunAsync();
                 
