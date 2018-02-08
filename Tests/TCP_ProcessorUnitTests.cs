@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.IO;
+using Tests;
 
 namespace UnitTests
 {
@@ -103,22 +104,28 @@ namespace UnitTests
             CancellationToken token = tokenSource.Token;
             OspProtocol protocol = OspProtocol.HPSD_TCP;
 
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
+
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
                 var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
             }, token);
 
+            // Now connect to the Guard as an upstream proxy
+            TcpClient client = new TcpClient();
+            ConnectUpstream(client, upstreamPort);
+            NetworkStream up = client.GetStream();
+            Console.WriteLine("Test: Upstream connected");
+
             // Connect the Guard downstream
             TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
             mesgServer.Start(1);
             TcpClient server = ConnectDownstream(mesgServer);
             NetworkStream down = server.GetStream();
-
-            // Now connect to the Guard as an upstream proxy
-            TcpClient client = new TcpClient();
-            ConnectUpstream(client, upstreamPort);
-            NetworkStream up = client.GetStream();
+            Console.WriteLine("Test: Downstream connected");
 
             // Send some test messages
             int counter = 0;
@@ -127,7 +134,7 @@ namespace UnitTests
             byte[] message = null;
             while (counter < 5)
             {
-                testData = statusMessage(counter).ToByteArray();
+                testData = Harness.HPSD_StatusMessage(counter);
                 WriteMessage(testData, up);
                 counter++;
                 Thread.Sleep(60);
@@ -201,52 +208,73 @@ namespace UnitTests
             CancellationToken token = tokenSource.Token;
             OspProtocol protocol = OspProtocol.HPSD_TCP;
 
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
+
             // Start the Processor thread
             var processorTask = Task.Run(() =>
             {
                 var processorObj = ProcessorFactory.Create(upstreamPort, downstreamPort, protocol, testPolicy, token);
             }, token);
 
-            // Connect the Guard downstream
-            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
-            mesgServer.Start(1);
-            TcpClient server = ConnectDownstream(mesgServer);
-            NetworkStream down = server.GetStream();
+            logger.Debug("Started Processor");
+
 
             // Now connect to the Guard as an upstream proxy
             TcpClient client = new TcpClient();
             ConnectUpstream(client, upstreamPort);
             NetworkStream up = client.GetStream();
+            Console.WriteLine("Test: Upstream connected");
+
+            // Connect the Guard downstream
+            TcpListener mesgServer = new TcpListener(EndPoint(downstreamPort)) { ExclusiveAddressUse = true };
+            mesgServer.Start(1);
+            TcpClient server = ConnectDownstream(mesgServer);
+            NetworkStream down = server.GetStream();
+            Console.WriteLine("Test: Downstream connected");
 
             // Send some test messages
             int counter = 0;
             int received = 0;
             byte[] testData;
             byte[] message = null;
-            while (counter < 5)
+            while (counter < 10 && client.Connected)
             {
-                testData = statusMessage(counter).ToByteArray();
+                testData = Harness.HPSD_StatusMessage(counter);
                 WriteMessage(testData, up);
                 counter++;
                 Thread.Sleep(60);
 
-                message = ReadMessage(down);
+                // Chopp off the downstream mid-flow
+                if (counter == 5)
+                {
+                    server.Close();
+                    //down.Dispose();
+                    Assert.IsFalse(server.Connected);
+                }
+                else
+                {
+                    message = ReadMessage(down);
 
-                Assert.IsTrue(message.SequenceEqual(testData));
-                received++;
+                    if (message == null)    // disconnect
+                    {
+                        break;
+                    }
+                    Assert.IsTrue(message.SequenceEqual(testData));
+                    received++;
+                }
             }
-            Assert.IsTrue(received == 5);
+            Assert.IsTrue(received == 4);
 
-            // Close the downstream connection
-            server.Close();
-            down.Dispose();
-            Assert.IsFalse(server.Connected);
+           
             // Wait a second so the disconnection can be detected
-            Thread.Sleep(2000);
+            //Thread.Sleep(2000);
 
             // Upstream should be disconnected
             if (client.Client.Poll(1, SelectMode.SelectWrite))
             {
+                Console.WriteLine("Test: Upstream disconnected");
                 client.Close();
                 up.Dispose();
             }
@@ -296,8 +324,8 @@ namespace UnitTests
                 tokenSource.Dispose();
                 server.Close();
                 client.Close();
-                up.Dispose();
-                down.Dispose();
+                //up.Dispose();
+                //down.Dispose();
                 mesgServer.Stop();
             }
         }
@@ -381,6 +409,7 @@ namespace UnitTests
             return statusMessage;
         }
 
+
         /// <summary>
         /// Read a prefix delimited message from a network stream
         /// </summary>
@@ -388,14 +417,19 @@ namespace UnitTests
         /// <returns>A message or null</returns>
         private byte[] ReadMessage(NetworkStream stream)
         {
+            // Read timout is set on the socket which will throw IOException
             try
             {
+                // read the first 4 bytes as an int32
                 byte[] prefix = new byte[4];
                 int _read = 0;
                 while (_read < 4)
                 {
-                    // read the first 4 bytes as an int32
-                    _read = _read + stream.Read(prefix, 0, 4);
+                    _read += stream.Read(prefix, 0, 4);
+                    if (_read == 0)  // No more data available (disconnected)
+                    {
+                        throw new IOException("I/O error occurred.");
+                    }
                 }
                 Int32 length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(prefix, 0));
 
@@ -404,16 +438,55 @@ namespace UnitTests
                 _read = 0;
                 while (_read < length)
                 {
-                    _read = _read + stream.Read(message, 0, length);
+                    _read += stream.Read(message, 0, length);
+                    if (_read == 0)  // No more data available (disconnected)
+                    {
+                        throw new IOException("I/O error occurred.");
+                    }
                 }
                 return message;
             }
             catch (IOException)
             {
-                // Do something with the error message
+                // Read has timed out or disconnected
                 return null;
             }
         }
+
+
+        /// <summary>
+        /// Read a prefix delimited message from a network stream
+        /// </summary>
+        /// <param name="stream">NetworkStream to read</param>
+        /// <returns>A message or null</returns>
+        //private byte[] ReadMessage(NetworkStream stream)
+        //{
+        //    try
+        //    {
+        //        byte[] prefix = new byte[4];
+        //        int _read = 0;
+        //        while (_read < 4)
+        //        {
+        //            // read the first 4 bytes as an int32
+        //            _read = _read + stream.Read(prefix, 0, 4);
+        //        }
+        //        Int32 length = IPAddress.NetworkToHostOrder(BitConverter.ToInt32(prefix, 0));
+
+        //        // Read the message using the length prescribed
+        //        byte[] message = new byte[length];
+        //        _read = 0;
+        //        while (_read < length)
+        //        {
+        //            _read = _read + stream.Read(message, 0, length);
+        //        }
+        //        return message;
+        //    }
+        //    catch (IOException)
+        //    {
+        //        // Do something with the error message
+        //        return null;
+        //    }
+        //}
 
         /// <summary>
         /// Write a prefix delimited message to a network stream

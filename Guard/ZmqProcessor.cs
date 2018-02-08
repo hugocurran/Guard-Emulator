@@ -36,24 +36,29 @@ namespace Guard_Emulator
             using (var subSocket = new SubscriberSocket())
             using (var pubSocket = new PublisherSocket())
             {
-                subSocket.Options.ReceiveHighWatermark = 1000;
-                subSocket.Bind("tcp://" + subscribe);
+                //subSocket.Options.ReceiveHighWatermark = 1000;
+                //subSocket.Bind("tcp://" + subscribe);
+                subSocket.Connect("tcp://" + subscribe);
+
                 subSocket.SubscribeToAnyTopic();
                 logger.Information(id + "Connected to subscribe socket: " + subscribe);
 
+                pubSocket.Options.ReceiveHighWatermark = 1000;
+                pubSocket.Bind("tcp://" + publish);
                 pubSocket.Options.SendHighWatermark = 1000;
-                pubSocket.Connect("tcp://" + publish);
+                //pubSocket.Connect("tcp://" + publish);
                 logger.Information(id + "Connected to publish socket: " + publish);
                 // Start monitoring the cancellation token
                 poller.RunAsync();
-
-                InternalMessage iMesg = null;
-                byte[] message = null;
+                
                 logger.Debug(id + "Starting message loop...");
                 while (true)
                 {
+                    byte[] message = null;
+                    InternalMessage iMesg = null;
                     message = subSocket.ReceiveFrameBytes();
                     logger.Debug(id + "Message read from: " + subscribe);
+
                     switch (osp)
                     {
                         case OspProtocol.HPSD_ZMQ:

@@ -44,7 +44,7 @@ namespace UnitTests
             imesg.Attribute.Add("attrib1");
             imesg.Attribute.Add("attrib2");
 
-            string expected = "Type: ObjectUpdate Time: " + time.ToUniversalTime().ToString() + " Sequence: 42 Federate: foo Entity: bar ObjectName: some.object Attributes: attrib1, attrib2, ";
+            string expected = "Type: ObjectUpdate TimeStamp: " + time.ToUnixTimeMilliseconds().ToString() + " Sequence: 42 Federate: foo Entity: bar ObjectName: some.object Attributes: attrib1, attrib2, ";
 
             Assert.AreEqual(expected, imesg.ToString());
         }

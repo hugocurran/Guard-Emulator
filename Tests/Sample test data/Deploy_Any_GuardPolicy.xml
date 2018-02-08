@@ -1,252 +1,259 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <!---><Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd"> -->
-  <configMgmt>
-    <securityOwner>UK</securityOwner>
-    <securityClassification>Official</securityClassification>
-    <currentVersion>1.0</currentVersion>
-    <description>Test deployment doc for Guard Emulator with 'pass anything' policy</description>
-    <created>
-      <date>2017-12-14</date>
-      <author>PC</author>
-      <initialVersion>1.0</initialVersion>
-    </created>
-    <docReference>52769B0B-A240-45E2-972C-ED3B6307F71D</docReference>
-  </configMgmt>
-  <designDocReference>C2056C70-A628-490E-B59B-3946EE89DFC3</designDocReference>
-  <system systemType="Gateway">
-    <pattern>HTG</pattern>
-    <component componentID ="F6A15143-6BF7-4313-B558-C154C973EC07" componentType="Proxy">
-      <interface>
-        <interfaceName>CS+S Network</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
-      </interface>
-      <interface>
-        <interfaceName>Guard High Side</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
-      </interface>
-      <federation>
-        <federationName>CDS4-Demo Federation</federationName>
-        <federateName>GBAD-GWY</federateName>
-        <interfaceName>CS+S Network</interfaceName>
-        <rti>
-          <crcAddress type="ipAddress">127.0.0.1</crcAddress>
-          <crcPortNumber>4452</crcPortNumber>
-          <hlaSpec>HLA Evolved</hlaSpec>
-          <fom>
-            <fileName>NETN-Base_v1.0.2.xml</fileName>
-            <fileName>NETN-Aggregate_v1.0.4.xml</fileName>
-          </fom>
-        </rti>
-      </federation>
-      <osp>
-        <protocol>HPSD_ZMQ</protocol>
-        <path>ExportPath</path>
-        <outputPort>127.0.0.1:5556</outputPort>
-      </osp>
-      <osp>
-        <protocol>HPSD_ZMQ</protocol>
-        <path>ImportPath</path>
-        <inputPort>127.0.0.1:5557</inputPort>
-      </osp>
-      <export>
-        <source>
-          <federateSource>BlueForce CGF</federateSource>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-            <attributeName dataType="string">Name</attributeName>
-            <attributeName dataType="string">Size</attributeName>
-          </object>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-            <attributeName dataType="string">Type</attributeName>
-          </object>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-          </interaction>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-          </interaction>
-        </source>
-        <source>
-          <entitySource>69fd9246-b475-4dd7-bbfe-ffd1b5b468bc</entitySource>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-            <attributeName dataType="string">Name</attributeName>
-            <attributeName dataType="string">Size</attributeName>
-          </object>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-            <attributeName dataType="string">Type</attributeName>
-          </object>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-          </interaction>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-          </interaction>
-        </source>
-        <interfaceName>HighNetwork</interfaceName>
-      </export>
-      <import>
-        <object>
-          <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-          <attributeName dataType="string">Name</attributeName>
-          <attributeName dataType="string">Size</attributeName>
-        </object>
-        <object>
-          <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-          <attributeName dataType="string">Type</attributeName>
-        </object>
-        <interaction>
-          <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-        </interaction>
-        <interaction>
-          <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-        </interaction>
-        <interfaceName>LowNetwork</interfaceName>
-      </import>
-    </component>
-    <component componentID ="F6A15143-6BF7-4313-B558-C154C973EC00" componentType="Proxy">
-      <interface>
-        <interfaceName>GBAD Network</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
-      </interface>
-      <interface>
-        <interfaceName>Guard Low Side</interfaceName>
-        <ipAddress netPrefix="8">127.0.0.1</ipAddress>
-      </interface>
-      <federation>
-        <federationName>GBAD Federation</federationName>
-        <federateName>DOTC(A)-GWY</federateName>
-        <interfaceName>GBAD Network</interfaceName>
-        <rti>
-          <crcAddress type="ipAddress">127.0.0.1</crcAddress>
-          <crcPortNumber>4497</crcPortNumber>
-          <hlaSpec>HLA Evolved</hlaSpec>
-          <fom>
-            <fileName>NETN-Base_v1.0.2.xml</fileName>
-            <fileName>NETN-Aggregate_v1.0.4.xml</fileName>
-          </fom>
-        </rti>
-      </federation>
-      <osp>
-        <protocol>HPSD</protocol>
-        <path>ExportPath</path>
-        <inputPort>127.0.0.1:5555</inputPort>
-      </osp>
-      <osp>
-        <protocol>HPSD</protocol>
-        <path>ImportPath</path>
-        <inputPort>127.0.0.1:5558</inputPort>
-      </osp>
-      <export>
-        <source>
-          <federateSource>BlueForce CGF</federateSource>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-            <attributeName dataType="string">Name</attributeName>
-            <attributeName dataType="string">Size</attributeName>
-          </object>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-            <attributeName dataType="string">Type</attributeName>
-          </object>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-          </interaction>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-          </interaction>
-        </source>
-        <source>
-          <entitySource>69fd9246-b475-4dd7-bbfe-ffd1b5b468bc</entitySource>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-            <attributeName dataType="string">Name</attributeName>
-            <attributeName dataType="string">Size</attributeName>
-          </object>
-          <object>
-            <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-            <attributeName dataType="string">Type</attributeName>
-          </object>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-          </interaction>
-          <interaction>
-            <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-          </interaction>
-        </source>
-        <interfaceName>HighNetwork</interfaceName>
-      </export>
-      <import>
-        <object>
-          <objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
-          <attributeName dataType="string">Name</attributeName>
-          <attributeName dataType="string">Size</attributeName>
-        </object>
-        <object>
-          <objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
-          <attributeName dataType="string">Type</attributeName>
-        </object>
-        <interaction>
-          <interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
-        </interaction>
-        <interaction>
-          <interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
-        </interaction>
-        <interfaceName>LowNetwork</interfaceName>
-      </import>
-    </component>
-    <component componentID="ED425374-5626-4773-8D5E-C2EBE683F632" componentType="Guard">
-      <interface>
-        <interfaceName>HighNetwork</interfaceName>
-        <ipAddress netPrefix="24">20.20.20.193</ipAddress>
-      </interface>
-      <interface>
-        <interfaceName>LowNetwork</interfaceName>
-        <ipAddress netPrefix="24">40.40.40.193</ipAddress>
-      </interface>
-      <host>
-        <hostName>Guard</hostName>
-        <logging>
-          <server protocol="syslog" transport="UDP" port="514">10.10.10.12</server>
-        </logging>
-        <time protocol="ntp">10.10.10.12</time>
-      </host>
-      <osp>
-        <protocol>HPSD_TCP</protocol>
-        <path>ExportPath</path>
-        <inputPort>20.20.20.193:8100</inputPort>
-        <outputPort>40.40.40.21:8100</outputPort>
-      </osp>
-      <osp>
-        <protocol>HPSD_TCP</protocol>
-        <path>ImportPath</path>
-        <inputPort>40.40.40.193:8100</inputPort>
-        <outputPort>20.20.20.31:8100</outputPort>
-      </osp>
-      <export>
-        <source>
-          <federateSource>*</federateSource>
-          <object>
-            <objectClassName>*</objectClassName>
-          </object>
-          <interaction>
-            <interactionClassName>*</interactionClassName>
-          </interaction>
-        </source>
-        <interfaceName>HighNetwork</interfaceName>
-      </export>
-      <import>
-        <object>
-          <objectClassName>*</objectClassName>
-        </object>
-        <interaction>
-          <interactionClassName>*</interactionClassName>
-        </interaction>
-        <interfaceName>LowNetwork</interfaceName>
-      </import>
-    </component>
-  </system>
+	<!---><Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl ../../Guard%20Emulator/Schema/FPDL-ver0.2.xsd"> -->
+	<configMgmt>
+		<securityOwner>UK</securityOwner>
+		<securityClassification>Official</securityClassification>
+		<currentVersion>1.0</currentVersion>
+		<description>Test deployment doc for Guard Emulator</description>
+		<created>
+			<date>2017-11-13</date>
+			<author>PC</author>
+			<initialVersion>1.0</initialVersion>
+		</created>
+		<docReference>52769B0B-A240-45E2-972C-ED3B6307F71D</docReference>
+		<changed>
+			<date>2017-11-13</date>
+			<author>PC</author>
+			<newVersion>1.0</newVersion>
+			<prevDocReference>00000000-0000-0000-0000-000000000000</prevDocReference>
+			<changeNotes>InitialVersion</changeNotes>
+		</changed>
+	</configMgmt>
+	<designReference>C2056C70-A628-490E-B59B-3946EE89DFC3</designReference>
+	<system systemType="Gateway">
+		<pattern patternReference="C2056C70-A628-490E-B59B-3946EE89DFC4">HTG</pattern>
+		<component componentID="F6A15143-6BF7-4313-B558-C154C973EC07" componentType="Proxy">
+			<interface>
+				<interfaceName>CS+S Network</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>Guard High Side</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<federation>
+				<federationName>CDS4-Demo Federation</federationName>
+				<federateName>GBAD-GWY</federateName>
+				<interfaceName>CS+S Network</interfaceName>
+				<rti>
+					<crcAddress addressType="ipAddress">127.0.0.1</crcAddress>
+					<crcPortNumber>4452</crcPortNumber>
+					<hlaSpec>HLA Evolved</hlaSpec>
+					<fom>
+						<fileName>NETN-Base_v1.0.2.xml</fileName>
+						<fileName>NETN-Aggregate_v1.0.4.xml</fileName>
+					</fom>
+				</rti>
+			</federation>
+			<osp>
+				<protocol>HPSD_ZMQ</protocol>
+				<path>ExportPath</path>
+				<outputPort>127.0.0.1:5556</outputPort>
+			</osp>
+			<osp>
+				<protocol>HPSD_ZMQ</protocol>
+				<path>ImportPath</path>
+				<inputPort>127.0.0.1:5557</inputPort>
+			</osp>
+			<export>
+				<source>
+					<federateSource>BlueForce CGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<source>
+					<entitySource>69fd9246-b475-4dd7-bbfe-ffd1b5b468bc</entitySource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<interfaceName>HighNetwork</interfaceName>
+			</export>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string">Name</attributeName>
+					<attributeName dataType="string">Size</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string">Type</attributeName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+				</interaction>
+				<interfaceName>LowNetwork</interfaceName>
+			</import>
+		</component>
+		<component componentID="F6A15143-6BF7-4313-B558-C154C973EC00" componentType="Proxy">
+			<interface>
+				<interfaceName>GBAD Network</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>Guard Low Side</interfaceName>
+				<ipAddress netPrefix="8">127.0.0.1</ipAddress>
+			</interface>
+			<federation>
+				<federationName>GBAD Federation</federationName>
+				<federateName>DOTC(A)-GWY</federateName>
+				<interfaceName>GBAD Network</interfaceName>
+				<rti>
+					<crcAddress addressType="ipAddress">127.0.0.1</crcAddress>
+					<crcPortNumber>4497</crcPortNumber>
+					<hlaSpec>HLA Evolved</hlaSpec>
+					<fom>
+						<fileName>NETN-Base_v1.0.2.xml</fileName>
+						<fileName>NETN-Aggregate_v1.0.4.xml</fileName>
+					</fom>
+				</rti>
+			</federation>
+			<osp>
+				<protocol>HPSD_ZMQ</protocol>
+				<path>ExportPath</path>
+				<inputPort>127.0.0.1:5555</inputPort>
+			</osp>
+			<osp>
+				<protocol>HPSD_ZMQ</protocol>
+				<path>ImportPath</path>
+				<inputPort>127.0.0.1:5558</inputPort>
+			</osp>
+			<export>
+				<source>
+					<federateSource>BlueForce CGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<source>
+					<entitySource>69fd9246-b475-4dd7-bbfe-ffd1b5b468bc</entitySource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string">Name</attributeName>
+						<attributeName dataType="string">Size</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string">Type</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+					</interaction>
+				</source>
+				<interfaceName>HighNetwork</interfaceName>
+			</export>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string">Name</attributeName>
+					<attributeName dataType="string">Size</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string">Type</attributeName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.StartUp</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.ShutDown</interactionClassName>
+				</interaction>
+				<interfaceName>LowNetwork</interfaceName>
+			</import>
+		</component>
+		<component componentID="ED425374-5626-4773-8D5E-C2EBE683F632" componentType="Guard">
+			<interface>
+				<interfaceName>HighNetwork</interfaceName>
+				<ipAddress netPrefix="24">20.20.20.193</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>LowNetwork</interfaceName>
+				<ipAddress netPrefix="24">40.40.40.193</ipAddress>
+			</interface>
+			<host>
+				<hostName>Guard</hostName>
+				<logging>
+					<server protocol="syslog" transport="UDP" port="514">127.0.0.1</server>
+				</logging>
+				<time protocol="ntp">10.10.10.12</time>
+			</host>
+			<osp>
+				<protocol>HPSD_TCP</protocol>
+				<path>ExportPath</path>
+				<inputPort>20.20.20.193:8100</inputPort>
+				<outputPort>40.40.40.21:8100</outputPort>
+			</osp>
+			<osp>
+				<protocol>HPSD_TCP</protocol>
+				<path>ImportPath</path>
+				<inputPort>40.40.40.193:8100</inputPort>
+				<outputPort>20.20.20.31:8100</outputPort>
+			</osp>
+			<export>
+				<source>
+					<federateSource>*</federateSource>
+					<object>
+						<objectClassName>*</objectClassName>
+					</object>
+					<interaction>
+						<interactionClassName>*</interactionClassName>
+					</interaction>
+				</source>
+				<interfaceName>HighNetwork</interfaceName>
+			</export>
+			<import>
+				<object>
+					<objectClassName>*</objectClassName>
+				</object>
+				<interaction>
+					<interactionClassName>*</interactionClassName>
+				</interaction>
+				<interfaceName>LowNetwork</interfaceName>
+			</import>
+		</component>
+	</system>
 </Deploy>

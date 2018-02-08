@@ -34,7 +34,7 @@ namespace Guard_Emulator
 
         public override string ToString()
         {
-            string common = String.Format("Type: {0} Time: {1} Sequence: {2}", Type, TimeStamp.ToUniversalTime(), SequenceNumber);
+            string common = String.Format("Type: {0} TimeStamp: {1} Sequence: {2}", Type, TimeStamp.ToUnixTimeMilliseconds(), SequenceNumber);
             switch (Type)
             {
                 case MessageType.Status:

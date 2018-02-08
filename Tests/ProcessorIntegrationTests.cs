@@ -18,31 +18,29 @@ namespace UnitTests
         // All testing done on loopback if
         string subscriber = "127.0.0.1:5556";
         string publisher = "127.0.0.1:5555";
-
-        // Processor setup
-        OspProtocol protocol = OspProtocol.HPSD_ZMQ;
+        OspProtocol protocol;
 
         // Sequence number for messages
         // Note that the test harness consumes seq 0 and 1
         int sequence = 0;   
 
         [TestMethod]
-        public void ProcessorStatusMessage()
+        public void ProcessorStatusMessage_HPSD()
         {
+            protocol = OspProtocol.HPSD_ZMQ;
             XDocument testPolicy = policy();
-            HpsdMessage testMessage = statusMessage(2);
             
-            Assert.IsTrue(processorDriver(testPolicy, testMessage));
+            Assert.IsTrue(processorDriver(testPolicy, statusMessage_HPSD));
         }
 
-        [TestMethod]
-        public void ProcessorObjectCreateMessagePositive()
-        {
-            XDocument testPolicy = policy();
-            HpsdMessage testMessage = objectCreateGood(2);
+        //[TestMethod]
+        //public void ProcessorObjectCreateMessagePositive()
+        //{
+        //    XDocument testPolicy = policy();
+        //    HpsdMessage testMessage = objectCreateGood(2);
             
-            Assert.IsTrue(processorDriver(testPolicy, testMessage));
-        }
+        //    Assert.IsTrue(processorDriver(testPolicy, testMessage));
+        //}
 /*
         // Illogical test - we should not receive anything
         [TestMethod]
@@ -55,15 +53,19 @@ namespace UnitTests
         }
         */
 
-        #region Test Harness
+        #region Test Harness - processor driver
 
         // Test harness
-        public bool processorDriver(XDocument policy, HpsdMessage sendMessage)
+        public bool processorDriver(XDocument policy, Func<int, byte[]> mesgType)
         {
-            bool success = true;
+            bool success = false;
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
+
+            // We need an initialised logger object
+            Logger logger = Logger.Instance;
+            logger.Initialise(Facility.Local1, "127.0.0.1");
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>
@@ -78,29 +80,32 @@ namespace UnitTests
             using (var subSocket = new SubscriberSocket())
             using (var pubSocket = new PublisherSocket())
             {
-                // Pull data from the receive socket
+                // UPSTREAM: Publish data on the guards subscribe socket
+                pubSocket.Options.SendHighWatermark = 1000;
+                pubSocket.Bind("tcp://" + subscriber);
+
+                // DOWNSTREAM Subscribe to test data on the guards publish socket                
                 subSocket.Options.ReceiveHighWatermark = 1000;
-                subSocket.Bind("tcp://" + publisher);
+                subSocket.Connect("tcp://" + publisher);
                 subSocket.SubscribeToAnyTopic();
 
-                // Push test data to the subscribe socket
-                pubSocket.Options.SendHighWatermark = 1000;
-                pubSocket.Connect("tcp://" + subscriber);
-
                 // Send starter
-                pubSocket.SendFrame(statusMessage(sequence++).ToByteArray());
+                pubSocket.SendFrame(statusMessage_HPSD(sequence++));
 
                 // Wait for the zmq connections to stabilise
                 Thread.Sleep(50);
-                pubSocket.SendFrame(statusMessage(sequence++).ToByteArray());
+                pubSocket.SendFrame(statusMessage_HPSD(sequence++));
 
                 byte[] receivedMessage = null;
+                byte[] sendMessage = mesgType(sequence);
                 TimeSpan timeout = new TimeSpan(1000000);    // 10 msec
-                pubSocket.SendFrame(sendMessage.ToByteArray());
+                pubSocket.SendFrame(sendMessage);
 
-                if (subSocket.TryReceiveFrameBytes(timeout, out receivedMessage))
-                {
-                    if (receivedMessage.SequenceEqual(sendMessage.ToByteArray()))
+
+                //if (subSocket.TryReceiveFrameBytes(timeout, out receivedMessage))
+                //{
+                receivedMessage = subSocket.ReceiveFrameBytes();
+                    if (receivedMessage.SequenceEqual(sendMessage))
                         success = true;
                     else
                         success = false;
@@ -116,12 +121,37 @@ namespace UnitTests
                         tokenSource.Dispose();
                     }
 
-                }
+                //}
                 return success;
             }
         }
 
+        #endregion
+
+        #region Test Policies
+
         // Test data sets
+
+        XDocument allowAllPolicy()
+        {
+            XDocument testPolicy = new XDocument();
+            testPolicy.Add(new XElement("exportPolicy"));
+            int number = 1;
+            XElement rule;
+
+            rule =
+            new XElement("exportPolicy",
+                new XElement("rule",
+                    new XAttribute("ruleNumber", number.ToString()),
+                 new XElement("federate", "*"),
+                 new XElement("entity", "*"),
+                 new XElement("objectName", "*"),
+                 new XElement("attributeName", "*"))
+            );
+            testPolicy.Element("exportPolicy").Add(rule);
+            number++;
+            return testPolicy;
+        }
 
         XDocument policy()
         {
@@ -129,20 +159,6 @@ namespace UnitTests
             testPolicy.Add(new XElement("exportPolicy"));
             int number = 1;
             XElement rule;
-            /*
-            rule =
-                new XElement("exportPolicy",
-                    new XElement("rule",
-                        new XAttribute("ruleNumber", number.ToString()),
-                        new XElement("federate", "*"),
-                        new XElement("entity", "*"),
-                        new XElement("objectName", "*"),
-                        new XElement("attributeName", "*"))
-            );
-            testPolicy.Element("exportPolicy").Add(rule);
-            number++;
-            */
-
             rule =
                 new XElement("rule",
                 new XAttribute("ruleNumber", number.ToString()),
@@ -190,7 +206,11 @@ namespace UnitTests
             return testPolicy;
         }
 
-        HpsdMessage statusMessage(int sequence)
+        #endregion
+
+        #region HPSD messages
+
+        byte[] statusMessage_HPSD(int sequence)
         {
             // Create an HPSD Status message for testing
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -208,10 +228,10 @@ namespace UnitTests
                     SessionName = "ThisSession"
                 }
             };
-            return statusMessage;
+            return statusMessage.ToByteArray();
         }
 
-        HpsdMessage objectCreateGood(int sequence)
+        byte[] objectCreateMessage(int sequence)
         {
             // Create an HPSD ObjectCreate message for testing
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -230,31 +250,13 @@ namespace UnitTests
                     ObjectClassName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"
                 }
             };
-            return objectCreateMessage;
+            return objectCreateMessage.ToByteArray();
         }
 
-        HpsdMessage objectCreateBad(int sequence)
-        {
-            // Create an HPSD ObjectCreate message for testing
-            long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            DateTime start = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            DateTime calcTime = start.AddMilliseconds(timeStamp).ToLocalTime();
-            HpsdMessage objectCreateMessage = new HpsdMessage()
-            {
-                ProtocolVersion = 81,
-                SequenceNumber = sequence,
-                Timestamp = timeStamp,
-                MessageType = HpsdMessage.Types.MessageType.ObjectCreate,
-                ObjectCreate = new ObjectCreate()
-                {
-                    ProducingFederate = "Typhoon",      // Invalid federate
-                    InstanceId = "2B93915C-116C-43F4-BF61-5295FFD5F82A",
-                    ObjectClassName = "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"
-                }
-            };
-            return objectCreateMessage;
-        }
+
         #endregion
+
+        
 
     }
 }

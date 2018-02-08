@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Json;
+//using Newtonsoft.Json;
 
 namespace Guard_Emulator
 {
@@ -20,29 +21,37 @@ namespace Guard_Emulator
     {
         InternalMessage parsedMessage = new InternalMessage();
 
-            JsonObject lvcMessage = (JsonObject)JsonObject.Parse(System.Text.Encoding.UTF8.GetString(message));
+            JsonObject lvcMessage = (JsonObject)JsonValue.Parse(Encoding.ASCII.GetString(message).TrimEnd(Convert.ToChar(0x00)));
 
             JsonObject cdsAdmin = (JsonObject)lvcMessage["cdsAdmin"];
-            parsedMessage.Federate = cdsAdmin["Origin"];
-            parsedMessage.EntityID = cdsAdmin["ObjectId"];
             parsedMessage.SequenceNumber = cdsAdmin["Sequence"];
-            webLvcOperation bar = (webLvcOperation)Enum.Parse(typeof(webLvcOperation), cdsAdmin["Operation"].ToString());
+            parsedMessage.TimeStamp = DateTimeOffset.UtcNow;
+            webLvcOperation mesgType = (webLvcOperation)Enum.Parse(typeof(webLvcOperation), cdsAdmin["Operation"].ToString());
 
-            switch(bar)
+            switch (mesgType)
             {
                 case webLvcOperation.Create:
                     parsedMessage.Type = MessageType.ObjectCreate;
+                    parsedMessage.Federate = cdsAdmin["Origin"];
+                    parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
                     break;
 
                 case webLvcOperation.Delete:
                     parsedMessage.Type = MessageType.ObjectDelete;
+                    parsedMessage.Federate = cdsAdmin["Origin"];
+                    parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
                     break;
 
                 case webLvcOperation.Update:
+                   
                     parsedMessage.Type = MessageType.ObjectUpdate;
+                    parsedMessage.Federate = cdsAdmin["Origin"];
+                    parsedMessage.EntityID = cdsAdmin["ObjectId"];
+                    Console.WriteLine("Update: ");
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
+                    Console.WriteLine("Object: " + parsedMessage.ObjectName);
                     JsonObject attributes = (JsonObject)lvcMessage["Attributes"];
                     foreach (var attrib in attributes)
                     {
@@ -52,7 +61,13 @@ namespace Guard_Emulator
 
                 case webLvcOperation.Interaction:
                     parsedMessage.Type = MessageType.Interaction;
+                    parsedMessage.Federate = cdsAdmin["Origin"];
+                    parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.InteractionName = cdsAdmin["ObjectModelPath"];
+                    break;
+
+                case webLvcOperation.NOOP:
+                    parsedMessage.Type = MessageType.Status;
                     break;
             }
             return parsedMessage;
