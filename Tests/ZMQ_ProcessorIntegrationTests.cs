@@ -10,6 +10,7 @@ using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
 using Tests;
+using Hugo.Utility.Syslog;
 
 namespace UnitTests
 {
@@ -53,7 +54,7 @@ namespace UnitTests
         {
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();

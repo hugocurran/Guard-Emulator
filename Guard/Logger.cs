@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿// Copyright Peter Curran (peter@curran.org.uk) 2017
+
+using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Guard_Emulator
+namespace Hugo.Utility.Syslog
 {
     /// <summary>
-    /// Thread safe logger to be shared amongst each processor
+    /// Thread safe logger
     /// </summary>
     public class Logger
     {
         private static Logger instance = null;
         private Facility facility;
-        private string process;
+        private string appName;
+        private string procId;
+        private int version;
         private SyslogClient syslog;
 
         public bool IsInitialised { get; private set; }
@@ -42,12 +44,16 @@ namespace Guard_Emulator
         /// <param name="facility">Default facility</param>
         /// <param name="logServerIp">IP address of the syslog server</param>
         /// <param name="logServerPort">UDP port of the syslog server</param>
-        public void Initialise(Facility facility, string logServerIp, int logServerPort = 514, string process = "guard")
+        /// <param name="appName">Application name</param>
+        /// <param name="syslogVersion">Default = 1 (RFC 5424); set = 0 for legacy RFC 3164</param>
+        public void Initialise(Facility facility, string logServerIp, string appName, int logServerPort = 514, int syslogVersion = 1)
         {
             if (!IsInitialised)
             {
                 this.facility = facility;
-                this.process = process;
+                this.appName = appName;
+                version = syslogVersion;
+                procId = Process.GetCurrentProcess().Id.ToString();
                 syslog = new SyslogClient(logServerIp, logServerPort);
                 IsInitialised = true;
             }
@@ -146,8 +152,11 @@ namespace Guard_Emulator
 #if DEBUG 
             Console.WriteLine(message);
 #endif
-            message = process + ": " + message;
-            await syslog.SendAsync(new SyslogMessage((int)facility, (int)level, message));           
+            if (version == 0)   //RFC 3614 (legacy syslog)
+            {
+                message = appName + ": " + message;
+                await syslog.SendAsync(new SyslogMessage(facility, level, message, version, procId));
+            }
         }
     }
 }

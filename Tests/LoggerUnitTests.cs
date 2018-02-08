@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System;
 using System.Text;
+using Hugo.Utility.Syslog;
 
 namespace UnitTests
 {
@@ -19,7 +20,7 @@ namespace UnitTests
         public void LoggerInitialisation()    // 
         {
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local0, "127.0.0.1", 514);
+            logger.Initialise(Facility.Local0, "127.0.0.1", "testGuard", 514);
 
             Assert.IsTrue(logger.IsInitialised);
 
@@ -55,7 +56,7 @@ namespace UnitTests
 
             // Initialise Logger
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local0, "127.0.0.1");
+            logger.Initialise(Facility.Local0, "127.0.0.1", "testLogger");
 
             // Test
             logger.Alert("Test Message");
@@ -69,7 +70,7 @@ namespace UnitTests
             // Extract the message text
             string[] content = message.Split(' ');
 
-            Assert.AreEqual("guard: Test Message", content[4] + " " + content[5] + " " + content[6]);
+            Assert.AreEqual("guard: Test Message", content[4] + " " + content[5] + " " + content[6], "Mangled syslog message");
         } 
     }
 }

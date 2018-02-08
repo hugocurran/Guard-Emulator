@@ -13,6 +13,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using Tests;
+using Hugo.Utility.Syslog;
 
 namespace UnitTests
 {
@@ -37,7 +38,7 @@ namespace UnitTests
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>
@@ -106,7 +107,7 @@ namespace UnitTests
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>
@@ -210,7 +211,7 @@ namespace UnitTests
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>

@@ -9,6 +9,7 @@ using System.Threading;
 using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
+using Hugo.Utility.Syslog;
 
 namespace UnitTests
 {
@@ -65,7 +66,7 @@ namespace UnitTests
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
 
             // Start the Processor thread
             var processorTask = Task.Run(() =>

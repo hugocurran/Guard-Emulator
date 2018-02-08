@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Guard_Emulator
+namespace Hugo.Utility.Syslog
 {
     /// <summary>
     /// Syslog Message Severities - per RFC 5424
@@ -173,6 +173,14 @@ namespace Guard_Emulator
         /// Syslog version (1 = RFC 5424; 0 = RFC 3164 (legacy))
         /// </summary>
         public int Version { get; private set; }
+        /// <summary>
+        /// Device or applicaation name (default = NILVALUE)
+        /// </summary>
+        public string AppName { get; private set; }
+        /// <summary>
+        /// Process ID (default = NILVALUE)
+        /// </summary>
+        public string ProcID { get; private set; }
 
         /// <summary>
         /// Create a syslog message
@@ -181,13 +189,16 @@ namespace Guard_Emulator
         /// <param name="level">level</param>
         /// <param name="text">message text</param>
         /// <param name="version">version=1 (RFC 5424) is default; for legacy RFC 3164 set version=0</param>
-        public SyslogMessage(Facility facility, Level level, string text, int version = 1)
+        /// <param name="appName">APP-NAME value (default = NILVALUE)</param>
+        /// <param name="procId">PROCID value (default = NILVALUE)</param>
+        public SyslogMessage(Facility facility, Level level, string text, int version = 1, string appName="NILVALUE", string procId="NILVALUE")
         {
             Facility = facility;
             Level = level;
             Text = text;
             Version = version;
-
+            AppName = appName;
+            ProcID = procId;
         }
     }
 
@@ -223,8 +234,10 @@ namespace Guard_Emulator
 
             try
             {
-                syslogClient = new UdpClient(logServerIp, logServerPort);
-                syslogClient.DontFragment = false;  // RFC 5426
+                syslogClient = new UdpClient(logServerIp, logServerPort)
+                {
+                    DontFragment = false  // RFC 5426
+                };
                 syslogClient.Client.SendBufferSize = 1440;  // RFC 5426 (MTU - IP/UDP headers)
             }
             catch (Exception e)
@@ -249,22 +262,34 @@ namespace Guard_Emulator
         public async Task SendAsync(SyslogMessage message)
         {
             int priority = (int)message.Facility * 8 + (int)message.Level;
-            string version;
-            if (message.Version == 1)
-                version = "1";
+
+            string msg;
+            if (message.Version == 0)
+            {
+                msg = String.Format("<{0}>{1} {2} {3}",
+                                                  priority,
+                                                  LegacyTimestamp(DateTime.Now),
+                                                  hostname,
+                                                  message.Text);
+            }
             else
-                version = "";   // Legacy support
-
-            string msg = String.Format("<{0}>{1} {2} {3} {4}",
-                                              priority,
-                                              version,
-                                              DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffffzzz"),
-                                              hostname,
-                                              message.Text);
-
+            {
+                msg = String.Format("<{0}>1 {1} {2} {3}",
+                                  priority,
+                                  DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffffzzz"),
+                                  hostname,
+                                  message.Text);
+            }
             byte[] bytes = Encoding.ASCII.GetBytes(msg);
 
             await syslogClient.SendAsync(bytes, bytes.Length);
+        }
+
+        private string LegacyTimestamp(DateTime timestamp)
+        {
+            string month = timestamp.ToString("MMM");
+            string day = string.Format("{0,2}", timestamp.ToString("d"));
+            return month + " " + day + " " + timestamp.ToString("HH:mm:ss");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Hugo.Utility.Syslog;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace Guard_Emulator
 
             // Initialise logging
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local0, fpdlParser.SyslogServerIp);
+            logger.Initialise(Facility.Local0, fpdlParser.SyslogServerIp, "guard");
 
             logger.Information("Loaded Deploy File: " + args[0] + ". Design Document Reference: " + fpdlParser.DesignDocReference);
 

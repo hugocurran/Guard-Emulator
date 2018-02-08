@@ -10,6 +10,7 @@ using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
 using Tests;
+using Hugo.Utility.Syslog;
 
 namespace UnitTests
 {
@@ -43,7 +44,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -83,7 +84,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -133,7 +134,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new TcpProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -184,7 +185,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -235,7 +236,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
@@ -285,7 +286,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new ZmqProcessor();
 
             Assert.IsTrue(processor.ApplyPolicy(intMessage, testPolicy));
@@ -335,7 +336,7 @@ namespace UnitTests
             // Create a 'null' processor for testing
             // We need an initialised logger object
             Logger logger = Logger.Instance;
-            logger.Initialise(Facility.Local1, "127.0.0.1");
+            logger.Initialise(Facility.Local1, "127.0.0.1", "testGuard");
             Processor processor = new TcpProcessor();
 
             Assert.IsFalse(processor.ApplyPolicy(intMessage, testPolicy));
