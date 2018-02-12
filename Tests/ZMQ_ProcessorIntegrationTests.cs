@@ -10,7 +10,7 @@ using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
 using Tests;
-using Hugo.Utility.Syslog;
+
 
 namespace UnitTests
 {

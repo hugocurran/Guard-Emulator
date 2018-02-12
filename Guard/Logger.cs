@@ -1,9 +1,10 @@
 ﻿// Copyright Peter Curran (peter@curran.org.uk) 2017
 
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace Hugo.Utility.Syslog
+namespace Guard_Emulator
 {
     /// <summary>
     /// Thread safe logger
@@ -154,8 +155,12 @@ namespace Hugo.Utility.Syslog
 #endif
             if (version == 0)   //RFC 3614 (legacy syslog)
             {
-                message = appName + ": " + message;
-                await syslog.SendAsync(new SyslogMessage(facility, level, message, version, procId));
+                //message = appName + ": " + message;
+                await syslog.SendAsync(new SyslogMessage(facility, level, message, version, appName));
+            }
+            else             // RFC 5424
+            {
+                await syslog.SendAsync(new SyslogMessage(facility, level, message, version, appName, procId));
             }
         }
     }

@@ -9,7 +9,7 @@ using System.Threading;
 using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
-using Hugo.Utility.Syslog;
+
 
 namespace UnitTests
 {

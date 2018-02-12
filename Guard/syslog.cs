@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Hugo.Utility.Syslog
+namespace Guard_Emulator
 {
     /// <summary>
     /// Syslog Message Severities - per RFC 5424
@@ -174,13 +174,18 @@ namespace Hugo.Utility.Syslog
         /// </summary>
         public int Version { get; private set; }
         /// <summary>
-        /// Device or applicaation name (default = NILVALUE)
+        /// Device or application name (default = NILVALUE)
         /// </summary>
         public string AppName { get; private set; }
         /// <summary>
-        /// Process ID (default = NILVALUE)
+        /// Process ID (default = NILVALUE)\n
+        /// Note used in legacy syslog
         /// </summary>
         public string ProcID { get; private set; }
+
+        public string MsgID { get; private set; }
+
+        public string StructuredData { get; private set; }
 
         /// <summary>
         /// Create a syslog message
@@ -191,7 +196,14 @@ namespace Hugo.Utility.Syslog
         /// <param name="version">version=1 (RFC 5424) is default; for legacy RFC 3164 set version=0</param>
         /// <param name="appName">APP-NAME value (default = NILVALUE)</param>
         /// <param name="procId">PROCID value (default = NILVALUE)</param>
-        public SyslogMessage(Facility facility, Level level, string text, int version = 1, string appName="NILVALUE", string procId="NILVALUE")
+        public SyslogMessage(Facility facility, 
+            Level level, 
+            string text, 
+            int version = 1, 
+            string appName="NILVALUE", 
+            string procId="NILVALUE", 
+            string msgId = "NILVALUE",
+            string structData = "NILVALUE")
         {
             Facility = facility;
             Level = level;
@@ -199,11 +211,39 @@ namespace Hugo.Utility.Syslog
             Version = version;
             AppName = appName;
             ProcID = procId;
+            MsgID = msgId;
+            StructuredData = structData;
         }
+
+        internal string GetMessage()
+        {
+            if (Version == 0)
+            {
+                if (AppName == "NILVALUE")
+                    return Text;
+                else
+                    return String.Format("{0}: {1}", AppName, Text);
+            }
+
+            string appName = (AppName == "NILVALUE") ? "-" : AppName;
+            string procId = (ProcID == "NILVALUE") ? "-" : ProcID;
+            string msgId = (MsgID == "NILVALUE") ? "-" : MsgID;
+            string structData = (StructuredData == "NILVALUE") ? "-" : StructuredData;
+
+            return String.Format("{0} {1} {2} {3} {4}",
+                appName,
+                procId,
+                msgId,
+                structData,
+                Text
+                );
+        }
+
+
     }
 
     /// <summary>
-    /// The syslog client - NOT thread safe
+    /// The syslog client - NOT thread safe unless used with Logger singeton
     /// </summary>
     public class SyslogClient
     {
@@ -266,11 +306,11 @@ namespace Hugo.Utility.Syslog
             string msg;
             if (message.Version == 0)
             {
-                msg = String.Format("<{0}>{1} {2} {3}",
-                                                  priority,
-                                                  LegacyTimestamp(DateTime.Now),
-                                                  hostname,
-                                                  message.Text);
+                    msg = String.Format("<{0}>{1} {2} {3}",
+                                                      priority,
+                                                      LegacyTimestamp(DateTime.Now),
+                                                      hostname,
+                                                      message.GetMessage());
             }
             else
             {
@@ -278,7 +318,7 @@ namespace Hugo.Utility.Syslog
                                   priority,
                                   DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.ffffffzzz"),
                                   hostname,
-                                  message.Text);
+                                  message.GetMessage());
             }
             byte[] bytes = Encoding.ASCII.GetBytes(msg);
 
@@ -287,9 +327,11 @@ namespace Hugo.Utility.Syslog
 
         private string LegacyTimestamp(DateTime timestamp)
         {
-            string month = timestamp.ToString("MMM");
-            string day = string.Format("{0,2}", timestamp.ToString("d"));
-            return month + " " + day + " " + timestamp.ToString("HH:mm:ss");
+            string day = (Convert.ToInt32(timestamp.ToString("%d")) < 10) ?
+                string.Format(" {0}", timestamp.ToString("%d")) :
+                string.Format("{0}", timestamp.ToString("%d"));
+
+            return timestamp.ToString("MMM") + " " + day + " " + timestamp.ToString("HH:mm:ss");
         }
     }
 }
