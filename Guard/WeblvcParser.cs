@@ -7,9 +7,9 @@ namespace Guard_Emulator
 {
     public static class WeblvcParser
     {
-        enum webLvcOperation
+        enum WebLvcOperation
         {
-            NOOP = 0,
+            Status = 0,
             Interaction = 1,
             Create = 2,
             Update = 3,
@@ -20,30 +20,40 @@ namespace Guard_Emulator
     {
         InternalMessage parsedMessage = new InternalMessage();
 
-            JsonObject lvcMessage = (JsonObject)JsonValue.Parse(Encoding.ASCII.GetString(message).TrimEnd(Convert.ToChar(0x00)));
+            // Dodgy characters at the end
+            char[] crud = new char[] { '\x0000', '\x000a' };
+
+            //Console.WriteLine("raw message: {0} len={1}", Encoding.ASCII.GetString(message), Encoding.ASCII.GetString(message).Length);
+            //Console.WriteLine("new message: {0} len={1}", Encoding.ASCII.GetString(message).TrimEnd(crud), Encoding.ASCII.GetString(message).TrimEnd(crud).Length);
+            JsonObject lvcMessage = (JsonObject)JsonValue.Parse(Encoding.ASCII.GetString(message).TrimEnd(crud));
+
+            //Console.WriteLine("back from the parser");
 
             JsonObject cdsAdmin = (JsonObject)lvcMessage["cdsAdmin"];
             parsedMessage.SequenceNumber = cdsAdmin["Sequence"];
-            parsedMessage.TimeStamp = DateTimeOffset.UtcNow;
-            webLvcOperation mesgType = (webLvcOperation)Enum.Parse(typeof(webLvcOperation), cdsAdmin["Operation"].ToString());
+            //parsedMessage.TimeStamp = cdsAdmin["TimeStamp"];
+            parsedMessage.TimeStamp = DateTimeOffset.FromUnixTimeMilliseconds((long)cdsAdmin["TimeStamp"]/1000);
+            parsedMessage.SessionActive = true;
+            parsedMessage.SessionName = cdsAdmin["Origin"];
+            WebLvcOperation mesgType = (WebLvcOperation)Enum.Parse(typeof(WebLvcOperation), cdsAdmin["Operation"].ToString());
 
             switch (mesgType)
             {
-                case webLvcOperation.Create:
+                case WebLvcOperation.Create:
                     parsedMessage.Type = MessageType.ObjectCreate;
                     parsedMessage.Federate = cdsAdmin["Origin"];
                     parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
                     break;
 
-                case webLvcOperation.Delete:
+                case WebLvcOperation.Delete:
                     parsedMessage.Type = MessageType.ObjectDelete;
                     parsedMessage.Federate = cdsAdmin["Origin"];
                     parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.ObjectName = cdsAdmin["ObjectModelPath"];
                     break;
 
-                case webLvcOperation.Update:
+                case WebLvcOperation.Update:
                    
                     parsedMessage.Type = MessageType.ObjectUpdate;
                     parsedMessage.Federate = cdsAdmin["Origin"];
@@ -56,14 +66,14 @@ namespace Guard_Emulator
                     }
                     break;
 
-                case webLvcOperation.Interaction:
+                case WebLvcOperation.Interaction:
                     parsedMessage.Type = MessageType.Interaction;
                     parsedMessage.Federate = cdsAdmin["Origin"];
                     parsedMessage.EntityID = cdsAdmin["ObjectId"];
                     parsedMessage.InteractionName = cdsAdmin["ObjectModelPath"];
                     break;
 
-                case webLvcOperation.NOOP:
+                case WebLvcOperation.Status:
                     parsedMessage.Type = MessageType.Status;
                     break;
             }

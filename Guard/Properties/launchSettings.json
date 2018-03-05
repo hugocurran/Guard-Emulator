@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Guard": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\peter\\source\\repos\\Guard-Emulator\\Deploy_Any_GuardPolicy.xml"
+    }
+  }
+}

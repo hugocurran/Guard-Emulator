@@ -42,7 +42,7 @@ namespace UnitTests
         }
 
         [TestMethod]
-        public void weblvcObjectUpdateMessageParsing()
+        public void WeblvcObjectUpdateMessageParsing()
         {
             //string jsonString = 
             //    "{\"Attributes\":" +
