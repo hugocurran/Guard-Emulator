@@ -24,7 +24,7 @@ namespace Guard_Emulator
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
-        public ZmqProcessor(string subscribe, string publish, ModuleOsp.OspProtocol osp, XDocument policy, CancellationToken token) : base()
+        public ZmqProcessor(string subscribe, string publish, ModuleOsp.OspProtocol osp, XElement policy, CancellationToken token) : base()
         {
             // Get identity
             id = WhoAmI(policy);

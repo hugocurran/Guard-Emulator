@@ -33,7 +33,7 @@ namespace Guard_Emulator
         /// </summary>
         /// <param name="message">message in standardised internal format</param>
         /// <returns>True if message permitted, else False</returns>
-        internal bool ApplyPolicy(InternalMessage intMessage, XDocument ruleSet)
+        internal bool ApplyPolicy(InternalMessage intMessage, XElement ruleSet)
         {
             // Reset ruleNumber
             ruleNumber = "NOMATCH";
@@ -150,9 +150,9 @@ namespace Guard_Emulator
             return false;
         }
 
-        protected string WhoAmI(XDocument policy)
+        protected string WhoAmI(XElement policy)
         {
-            string policyName = policy.Root.Name.LocalName;
+            string policyName = policy.Name.LocalName;
             if (policyName.Contains("export"))
                  return "Export ";
             else

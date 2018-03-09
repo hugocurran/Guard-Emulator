@@ -9,7 +9,7 @@ namespace Guard_Emulator
 {
     public static class ProcessorFactory
     {
-        public static Processor Create(string subscribe, string publish, ModuleOsp.OspProtocol osp, XDocument policy, CancellationToken token)
+        public static Processor Create(string subscribe, string publish, ModuleOsp.OspProtocol osp, XElement policy, CancellationToken token)
         {
             switch (osp)
             {

@@ -7,9 +7,8 @@ namespace Guard_Emulator
     /// </summary>
     internal class RuleSet
     {
-        XDocument ruleSet;
-        XElement firstElement;
-        int counter;
+        private XElement ruleSet;
+        private int counter;
 
         /// <summary>
         /// Constructor initialises a new ruleset
@@ -18,9 +17,7 @@ namespace Guard_Emulator
         internal RuleSet(string ruleSetName)
         {
             // Initialise policy
-            ruleSet = new XDocument();
-            ruleSet.AddFirst(new XElement(ruleSetName));
-            firstElement = ruleSet.Element(ruleSetName);
+            ruleSet = new XElement(ruleSetName);
             counter = 1;
         }
 
@@ -40,7 +37,7 @@ namespace Guard_Emulator
                     new XElement("entity", ent),
                     new XElement("objectName", obj),
                     new XElement("attributeName", attr));
-            firstElement.Add(rule);
+            ruleSet.Add(rule);
             counter++;
         }
 
@@ -48,6 +45,6 @@ namespace Guard_Emulator
         /// Return the guard ruleset
         /// </summary>
         /// <returns>Ruleset</returns>
-        internal XDocument GetRuleSet() { return ruleSet; }
+        internal XElement GetRuleSet() { return ruleSet; }
     }
 }

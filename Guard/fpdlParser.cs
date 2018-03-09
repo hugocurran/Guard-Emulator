@@ -80,11 +80,11 @@ namespace Guard_Emulator
         /// <summary>
         /// Guard component export policy
         /// </summary>
-        internal XDocument ExportPolicy { get { return exportPolicy.GetRuleSet(); } }
+        internal XElement ExportPolicy { get { return exportPolicy.GetRuleSet(); } }
         /// <summary>
         /// Guard component import policy
         /// </summary>
-        internal XDocument ImportPolicy { get { return importPolicy.GetRuleSet(); } }
+        internal XElement ImportPolicy { get { return importPolicy.GetRuleSet(); } }
         /// <summary>
         /// Parser error message
         /// </summary>

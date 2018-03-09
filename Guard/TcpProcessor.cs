@@ -26,7 +26,7 @@ namespace Guard_Emulator
         /// <param name="osp">OSP message protocol</param>
         /// <param name="policy">Policy ruleset to apply</param>
         /// <param name="token">Cancellation token</param>
-        public TcpProcessor(string upstreamPort, string downstreamPort, ModuleOsp.OspProtocol osp, XDocument policy, CancellationToken token) : base()
+        public TcpProcessor(string upstreamPort, string downstreamPort, ModuleOsp.OspProtocol osp, XElement policy, CancellationToken token) : base()
         {
             // Get identity
             this.id = WhoAmI(policy);
@@ -45,14 +45,14 @@ namespace Guard_Emulator
                 logger.Information(id + "Listening on " + upstreamPort);
                 mesgServer.Start(1);
                 // Synchronous call
-                TcpClient server = ConnectUpstream(mesgServer).Result;
+                TcpClient server = connectUpstream(mesgServer).Result;
                 logger.Information(id + "Upstream connected on " + upstreamPort);
                 NetworkStream upstream = server.GetStream();
 
                 // Setup connection to downstream proxy
                 logger.Information(id + "Connecting to " + downstreamPort);
                 // Synchronous call
-                TcpClient client = ConnectDownstream(downstreamPort).Result;
+                TcpClient client = connectDownstream(downstreamPort).Result;
                 NetworkStream downstream = client.GetStream();
                 logger.Information(id + "Downstream connected on " + downstreamPort);
 
@@ -64,7 +64,7 @@ namespace Guard_Emulator
                 {
                     while (client.Connected && server.Connected)
                     {
-                        message = ReadMessage(upstream);
+                        message = readMessage(upstream);
                         if (message != null)
                         {
                             logger.Debug(id + "Message read from: " + upstreamPort);
@@ -126,7 +126,7 @@ namespace Guard_Emulator
                         server.Close(); // Dispose the old connection
                         upstream.Dispose();
                         // Synchronous call
-                        server = ConnectUpstream(mesgServer).Result;
+                        server = connectUpstream(mesgServer).Result;
                         upstream = server.GetStream();
                         upstreamReconnected = true;
                         logger.Information(id + "Upstream reconnected");
@@ -139,7 +139,7 @@ namespace Guard_Emulator
                         client.Close();
                         downstream.Dispose();
                         // Synchronous call
-                        client = ConnectDownstream(downstreamPort).Result;
+                        client = connectDownstream(downstreamPort).Result;
                         downstream = client.GetStream();
                         logger.Information(id + "Downstream reconnected");
 
@@ -149,7 +149,7 @@ namespace Guard_Emulator
                             server.Close();
                             upstream.Dispose();
                             // Synchronous call
-                            server = ConnectUpstream(mesgServer).Result;
+                            server = connectUpstream(mesgServer).Result;
                             upstream = server.GetStream();
                             logger.Information(id + "Upstream reconnected");
                             // Log an event message
@@ -164,8 +164,7 @@ namespace Guard_Emulator
         /// </summary>
         /// <param name="client">TcpClient reference</param>
         /// <param name="downstreamPort">IPaddr:port the downstream is listening on</param>
-        //private void ConnectDownstream(TcpClient client, string downstreamPort)
-        private async Task<TcpClient> ConnectDownstream(string downstreamPort)
+        private async Task<TcpClient> connectDownstream(string downstreamPort)
         {
             TcpClient client = null;
             do
@@ -174,7 +173,6 @@ namespace Guard_Emulator
                 {
                     client = new TcpClient(AddressFamily.InterNetwork);
                     await client.ConnectAsync(Address(downstreamPort), Port(downstreamPort));
-                    // Console.WriteLine(id + "Connect call returned {0}", downstreamPort);
                 }
                 catch (SocketException e)
                 {
@@ -189,42 +187,12 @@ namespace Guard_Emulator
             return client;
         }
 
-        ///// <summary>
-        ///// Connect to the downstream proxy
-        ///// </summary>
-        ///// <param name="client">TcpClient reference</param>
-        ///// <param name="downstreamPort">IPaddr:port the downstream is listening on</param>
-        ////private void ConnectDownstream(TcpClient client, string downstreamPort)
-        //private TcpClient ConnectDownstream(string downstreamPort)
-        //{
-        //    TcpClient client = null;
-        //    do
-        //    {
-        //        try
-        //        {
-        //            client = new TcpClient(AddressFamily.InterNetwork);
-        //            client.Connect(EndPoint(downstreamPort));
-        //            // Console.WriteLine(id + "Connect call returned {0}", downstreamPort);
-        //        }
-        //        catch (SocketException e)
-        //        {
-        //            logger.Debug(id + "loop exception: " + e.Message);
-        //            // should filter out not available errors only
-        //            Thread.Sleep(10000);  // Retry every 10 seconds
-        //        }
-        //    } while (!client.Connected);
-
-        //    client.NoDelay = true;
-        //    client.SendTimeout = 10;
-        //    return client;
-        //}
-
         /// <summary>
         /// Connect to the upstream proxy
         /// </summary>
         /// <param name="mesgServer">TcpListener reference</param>
         /// <returns>TcpClient instance for communication with the proxy</returns>
-        private async Task<TcpClient> ConnectUpstream(TcpListener mesgServer)
+        private async Task<TcpClient> connectUpstream(TcpListener mesgServer)
         {
             // This will block until the upstream connects
             TcpClient server = await mesgServer.AcceptTcpClientAsync();
@@ -233,26 +201,12 @@ namespace Guard_Emulator
             return server;
         }
 
-        ///// <summary>
-        ///// Connect to the upstream proxy
-        ///// </summary>
-        ///// <param name="mesgServer">TcpListener reference</param>
-        ///// <returns>TcpClient instance for communication with the proxy</returns>
-        //private TcpClient ConnectUpstream(TcpListener mesgServer)
-        //{
-        //    // This will block until the upstream connects
-        //    TcpClient server = mesgServer.AcceptTcpClient();
-        //    server.NoDelay = true;
-        //    server.ReceiveTimeout = 1000;   //  second timeout on reads
-        //    return server;
-        //}
-
         /// <summary>
         /// Read a prefix delimited message from a network stream
         /// </summary>
         /// <param name="stream">NetworkStream to read</param>
         /// <returns>A message or null</returns>
-        private byte[] ReadMessage(NetworkStream stream)
+        private byte[] readMessage(NetworkStream stream)
         {
             // Read timout is set on the socket which will throw IOException
             try
