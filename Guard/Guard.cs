@@ -40,22 +40,18 @@ namespace Guard_Emulator
                 tasks[0] = Task.Run(() =>
                         {
                             var exportObj = ProcessorFactory.Create(
-                                fpdlParser.ExportIn,
-                                fpdlParser.ExportOut,
-                                fpdlParser.Protocol,
-                                fpdlParser.ExportPolicy,
-                                token);
+                                fpdlParser,
+                                "Export",
+                                 token);
                         }, 
                     token);
 
                 logger.Information("Starting import task");
                 tasks[1] = Task.Run(() =>
                         {
-                            var importObj = ProcessorFactory.Create(
-                                fpdlParser.ImportIn,
-                                fpdlParser.ImportOut,
-                                fpdlParser.Protocol,
-                                fpdlParser.ImportPolicy,
+                        var importObj = ProcessorFactory.Create(
+                                fpdlParser,
+                                "Import",
                                 token);
                         }, token);
             while (true) { }
