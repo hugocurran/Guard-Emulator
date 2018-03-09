@@ -55,7 +55,7 @@ namespace UnitTests
             {
                 Assert.Fail(parser.ErrorMsg);
             }
-            Assert.AreEqual("127.0.0.1:5556", parser.ExportSub);
+            Assert.AreEqual("127.0.0.1:5556", parser.ExportIn);
             Assert.AreEqual(OspProtocol.HPSD_ZMQ, parser.Protocol);
             Assert.AreEqual("10.10.10.12", parser.SyslogServerIp);
         }

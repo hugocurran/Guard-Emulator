@@ -40,8 +40,8 @@ namespace Guard_Emulator
                 tasks[0] = Task.Run(() =>
                         {
                             var exportObj = ProcessorFactory.Create(
-                                fpdlParser.ExportSub,
-                                fpdlParser.ExportPub,
+                                fpdlParser.ExportIn,
+                                fpdlParser.ExportOut,
                                 fpdlParser.Protocol,
                                 fpdlParser.ExportPolicy,
                                 token);
@@ -52,8 +52,8 @@ namespace Guard_Emulator
                 tasks[1] = Task.Run(() =>
                         {
                             var importObj = ProcessorFactory.Create(
-                                fpdlParser.ImportSub,
-                                fpdlParser.ImportPub,
+                                fpdlParser.ImportIn,
+                                fpdlParser.ImportOut,
                                 fpdlParser.Protocol,
                                 fpdlParser.ImportPolicy,
                                 token);

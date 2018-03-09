@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Xml.Linq;
+using FPDL;
+using FPDL.Common;
+using FPDL.Deploy;
 
 [assembly: InternalsVisibleTo("Tests")]
 
@@ -15,98 +19,72 @@ namespace Guard_Emulator
 
     internal class FpdlParser
     {
-        //private XmlSchemaSet schema = new XmlSchemaSet();
 
-        private XDocument deploy;
-        private XNamespace f = "http://www.niteworks.net/fpdl";
-        
+        private Component component;
+        private ModuleOsp export;
+        private ModuleOsp import;
+        private RuleSet exportPolicy;
+        private RuleSet importPolicy;
 
-        internal FpdlParser() { }
-
-        #region Schema checking
-        /*
-         * Microsoft STILL does not support XSD 1.1 so we cannot use the .net
-         * schema stuff to validate a FPDL Deploy document
-         * 
-        internal bool LoadSchema(string nameSpace, string schemaLocation)
-        {
-
-            XmlUrlResolver resolver = new XmlUrlResolver();
-            resolver.ResolveUri(new Uri(schemaLocation), "");
-            schema.XmlResolver = resolver;
-            try
-            {   
-                schema.Add(nameSpace, schemaLocation + "FPDL-ver0.2.xsd");
-                schema.Compile();
-            }
-            catch (XmlSchemaException e)
-            {
-                errorMsg = "Schema load error: " + e.Message;
-                return false;
-            }
-            catch (ArgumentNullException e)
-            {
-                errorMsg = "Null exception error: " + e.Message;
-                return false;
-            }
-            catch (FileNotFoundException e)
-            {
-                errorMsg = e.Message;
-                return false;
-            }
-            if (!schema.Contains("http://www.niteworks.net/fpdl"))
-            {
-                errorMsg = "FPDL namespace not found";
-                return false;
-            }
-            return true;
-        
-    */
-        #endregion
-
-            /// <summary>
-            /// Load a FPDL Deploy document into the parser
-            /// </summary>
-            /// <param name="fileName">Deploy document filename</param>
-            /// <returns>true if successful, else false</returns>
+        /// <summary>
+        /// Load a FPDL Deploy document into the parser
+        /// </summary>
+        /// <param name="fileName">Deploy document filename</param>
+        /// <returns>true if successful, else false</returns>
         internal bool LoadDeployDocument(string fileName)
         {
             try
             {
-                deploy = XDocument.Load(fileName);
+                IFpdlObject fpdlObject = FpdlReader.Parse(fileName);
+                if (fpdlObject.GetType() != typeof(DeployObject))
+                {
+                    ErrorMsg = "Not a FPDL Deploy document: " + fileName;
+                    return false;
+                }
 
-                DesignDocReference = deploy.Element(f + "Deploy").Element(f + "designDocReference").Value;
-                //Logger.Log("Loaded Deploy File with Design Document Reference: " + designDocReference);
-                
-                string systemType = deploy.Element(f + "Deploy").Element(f + "system").Attribute("systemType").Value;
-                if (systemType != "Gateway")
+                DeployObject deploy = (DeployObject)fpdlObject;
+
+                DesignDocReference = deploy.DesignReference.ToString();
+
+                // We expect to receive a Deploy doc defining a single system, which must contain a 'guard' component.
+                if (deploy.Systems.Count != 1)
                 {
-                    ErrorMsg = "Invalid system type: " + systemType;
+                    ErrorMsg = "Deploy document ambiguity: Contains more than one system";
                     return false;
                 }
-                string pattern = deploy.Element(f + "Deploy").Element(f + "system").Element(f + "pattern").Value;
-                if (pattern != "HTG")
+
+                // The only system types that have a guard are HTG and MTG
+                if ((deploy.Systems[0].SystemType != Enums.PatternType.htg) || (deploy.Systems[0].SystemType != Enums.PatternType.mtg))
                 {
-                    ErrorMsg = "Invalid deployment pattern: " + pattern;
+                    ErrorMsg = "Invalid Deploy document: System type does not include a guard";
                     return false;
                 }
+
+                // To be useful there must be a single Guard component
+                if (deploy.Systems[0].Components.ToLookup(x => x.ComponentType == Enums.ComponentType.guard).Count != 1)
+                {
+                    ErrorMsg = "Too many/few Guard specifications in the Deploy document";
+                    return false;
+                }
+
+                component = deploy.Systems[0].Components.Find(x => x.ComponentType == Enums.ComponentType.guard);
             }
             catch (FileNotFoundException e)
             {
                 ErrorMsg = e.Message;
                 return false;
             }
-            return (ParseLogger() && ParseOsp());
+            return (SetLogger() && SetOsp() && setExportPolicy() && setImportPolicy());
         }
 
         /// <summary>
         /// Guard component export policy
         /// </summary>
-        internal XDocument ExportPolicy { get { return _exportPolicy(); } }
+        internal XDocument ExportPolicy { get { return exportPolicy.GetRuleSet(); } }
         /// <summary>
         /// Guard component import policy
         /// </summary>
-        internal XDocument ImportPolicy { get { return _importPolicy(); } }
+        internal XDocument ImportPolicy { get { return importPolicy.GetRuleSet(); } }
         /// <summary>
         /// Parser error message
         /// </summary>
@@ -114,51 +92,49 @@ namespace Guard_Emulator
         /// <summary>
         /// Address:port for export path subscribe socket
         /// </summary>
-        internal string ExportSub { get; private set; }
+        internal string ExportIn { get { return export.InputPort; } }
         /// <summary>
         /// Address:port for export path publish socket
         /// </summary>
-        internal string ExportPub { get; private set; }
+        internal string ExportOut { get { return export.OutputPort; } }
         /// <summary>
         /// Address:port for import path subscribe socket
         /// </summary>
-        internal string ImportSub { get; private set; }
+        internal string ImportIn { get { return import.InputPort; } }
         /// <summary>
         /// Address:port for import path publish socket
         /// </summary>
-        internal string ImportPub { get; private set; }
+        internal string ImportOut { get { return import.OutputPort; } }
         /// <summary>
         /// OSP messaging protocol
         /// </summary>
-        internal OspProtocol Protocol { get; private set; }
+        internal ModuleOsp.OspProtocol Protocol { get { return export.Protocol; } }
 
         internal string DesignDocReference { get; private set; }
 
         internal string SyslogServerIp { get; private set; }
 
-        private bool ParseLogger()
+        private bool SetLogger()
         {
             // Extract Logger settings from the deploy doc
-            IEnumerable<XElement> componentList = deploy.Element(f + "Deploy").Element(f + "system").Elements(f + "component");
 
-            XElement host = null;
-            foreach (XElement component in componentList)
+            // There should only be one host module
+            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.host).Count != 1)
             {
-                if (component.Attribute("componentType").Value == "Guard")
-                {
-                    host = component.Element(f + "host");  // There should only be one - perhaps test?
-                    break;
-                }
-            }
-            if (host == null)
-            {
-                ErrorMsg = "Invalid component specification for Guard (missing Host config)";
+                ErrorMsg = "Too many/few Host modules in the Component specification";
                 return false;
             }
+            // get the host module
+            ModuleHost host = (ModuleHost)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.host);
 
-            // We are currently only interested in logging...(should check the attributes!!)
-            SyslogServerIp = host.Element(f + "logging").Element(f + "server").Value;
-
+            // Extract the FIRST logging entry (dunno what happens if we have 2+ loggers)
+            // Check logger is defined
+            if (host.Logging.Count < 1)
+            {
+                ErrorMsg = "No log host defined";
+                return false;
+            }
+            SyslogServerIp = host.Logging[0].Name;
             return true;
         }
 
@@ -166,103 +142,39 @@ namespace Guard_Emulator
         /// Determine the OSP settings from the Deploy document
         /// </summary>
         /// <returns>true if successful</returns>
-        private bool ParseOsp()
+        private bool SetOsp()
         {
+            // We require two OSP modules to be defined
+            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.osp).Count != 2)
+            {
+                ErrorMsg = "Too many/few OSP modules in the Component specification";
+                return false;
+            }
+            List<ModuleOsp> ospList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.osp).Cast<ModuleOsp>().ToList();
+            ModuleOsp export = ospList.Find(x => x.Path.ToUpper() == "EXPORTPATH");
+            if (export == null)
+            {
+                ErrorMsg = "OSP: Export path not defined";
+                return false;
+            }
+            ModuleOsp import = ospList.Find(x => x.Path.ToUpper() == "IMPORTPATH");
+            if (import == null)
+            {
+                ErrorMsg = "OSP: Import path not defined";
+                return false;
+            }
+
             // Extract OSP settings from the deploy doc
-            // Build import policy from the deploy doc
-            IEnumerable<XElement> componentList = deploy.Element(f + "Deploy").Element(f + "system").Elements(f + "component");
-
-            IEnumerable<XElement> interfaceList = null;
-            IEnumerable<XElement> ospList = null;
-            foreach (XElement component in componentList)
+            if ((export.Protocol == ModuleOsp.OspProtocol.INVALID) || (import.Protocol == ModuleOsp.OspProtocol.INVALID))
             {
-                if (component.Attribute("componentType").Value == "Guard")
-                {
-                    interfaceList = component.Descendants(f + "interface");
-                    ospList = component.Descendants(f + "osp");
-                    break;
-                }
-            }
-            if ((interfaceList == null) || (ospList == null))
-            {
-                ErrorMsg = "No component defining Guard found";
+                ErrorMsg = "OSP: Protocol not set for exportPath or importPath";
                 return false;
             }
-            if ((interfaceList.Count() < 2) || (ospList.Count() != 2))
+            if (export.Protocol != import.Protocol)
             {
-                ErrorMsg = "Invalid component specification for Guard (wrong interface or osp count";
+                ErrorMsg = "OSP: Mismatch between importPath and exportPath protocol";
                 return false;
             }
-
-            Dictionary<string, string> interfaces = new Dictionary<string, string> ();
-            foreach (XElement iface in interfaceList)
-            {
-                interfaces.Add(iface.Element(f + "interfaceName").Value, iface.Element(f + "ipAddress").Value);
-            }
-
-            OspProtocol exportProtocol = OspProtocol.INVALID, importProtocol = OspProtocol.INVALID;
-            foreach (XElement osp in ospList)
-            {
-                // Export
-                if (osp.Element(f + "path").Value == "ExportPath")
-                {
-                    ExportSub = osp.Element(f + "inputPort").Value;
-                    ExportPub = osp.Element(f + "outputPort").Value;
-                    switch(osp.Element(f+ "protocol").Value)
-                    {
-                        case "HPSD_ZMQ":
-                            exportProtocol = OspProtocol.HPSD_ZMQ;
-                            break;
-                        case "HPSD_TCP":
-                            exportProtocol = OspProtocol.HPSD_TCP;
-                            break;
-                        case "WebLVC_ZMQ":
-                            exportProtocol = OspProtocol.WebLVC_ZMQ;
-                            break;
-                        case "WebLVC_TCP":
-                            exportProtocol = OspProtocol.WebLVC_TCP;
-                            break;
-                        default:
-                            exportProtocol = OspProtocol.INVALID;
-                            break;
-                    }
-                }
-                // Import
-                else
-                {
-                    ImportSub = osp.Element(f + "inputPort").Value;
-                    ImportPub = osp.Element(f + "outputPort").Value;
-                    switch (osp.Element(f + "protocol").Value)
-                    {
-                        case "HPSD_ZMQ":
-                            importProtocol = OspProtocol.HPSD_ZMQ;
-                            break;
-                        case "HPSD_TCP":
-                            importProtocol = OspProtocol.HPSD_TCP;
-                            break;
-                        case "WebLVC_ZMQ":
-                            importProtocol = OspProtocol.WebLVC_ZMQ;
-                            break;
-                        case "WebLVC_TCP":
-                            importProtocol = OspProtocol.WebLVC_TCP;
-                            break;
-                        default:
-                            importProtocol = OspProtocol.INVALID;
-                            break;
-                    }
-                }
-            }
-            if ((exportProtocol == OspProtocol.INVALID) || (exportProtocol == OspProtocol.INVALID))
-            {
-                ErrorMsg = "Invalid import or export messaging protocol";
-                return false;
-            }
-            if (exportProtocol != importProtocol)
-            {
-                ErrorMsg = "Mismatch between import and export messaging protocol";
-                return false;
-            }
-            Protocol = exportProtocol;
             return true;
         }
 
@@ -270,142 +182,99 @@ namespace Guard_Emulator
         /// Determine the export policy 
         /// </summary>
         /// <returns>true if no errors</returns>
-        private XDocument _exportPolicy()
+        private bool setExportPolicy()
         {
             // Initialise export policy
             RuleSet exportPolicy = new RuleSet("exportPolicy");
 
             // Build export policy from the deploy doc
-            IEnumerable<XElement> componentList = deploy.Element(f+"Deploy").Element(f + "system").Elements(f + "component");
-            
-            IEnumerable<XElement> sourceList = null;
-            foreach (XElement component in componentList)
+            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.export).Count != 1)
             {
-                if (component.Attribute("componentType").Value == "Guard")
-                {
-                    sourceList = component.Element(f + "export").Descendants(f+"source");
-                    break;
-                }
-            }
-            if (sourceList == null)
-            {
-                ErrorMsg = "No component defining Guard export policy found";
-                return null;
+                ErrorMsg = "No Export module in the Component specification";
+                return false;
             }
 
-            foreach (XElement source in sourceList)
-            { 
+            // Get the export module
+            ModuleExport exportPol = (ModuleExport)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.export);
+
+            foreach (Source source in exportPol.Sources)
+            {
                 string _fed, _ent, _obj, _attr;
-                
-                if (source.Element(f + "federateSource") != null)
+
+                switch (source.SourceType)
                 {
-                    _fed = source.Element(f + "federateSource").Value;
-                    _ent = "*";
+                    case Source.Type.Federate:
+                        _fed = source.FederateName;
+                        _ent = "*";
+                        break;
+                    case Source.Type.Entity:
+                        _fed = source.FederateName ?? "*";
+                        _ent = source.EntityId;
+                        break;
+                    default:
+                        ErrorMsg = "Export: Invalid source type found in Export Module";
+                        return false;
                 }
-                else
+                foreach (HlaObject obj in source.Objects)
                 {
-                    _fed = "*";
-                    _ent = source.Element(f + "entitySource").Value;
-                }
-                if (source.Element(f + "object") != null)
-                {
-                    IEnumerable<XElement> objectList = source.Descendants(f + "object");
-                    foreach (XElement objectName in objectList)
-                    {
-                        _obj = objectName.Element(f + "objectClassName").Value;
-                        IEnumerable<XElement> attributeList = objectName.Descendants(f + "attributeName");
-                        if (attributeList.Count() > 0)
+                    _obj = obj.ObjectClassName;
+                    if (obj.Attributes.Count > 0)
+                        foreach (HlaAttribute attrib in obj.Attributes)
                         {
-                            foreach (XElement attribute in attributeList)
-                            {
-                                _attr = attribute.Value;
-                                exportPolicy.Add(_fed, _ent, _obj, _attr);
-                            }
-                        }
-                        else  //If no attributes defined then all attributes permitted
-                        {
-                            _attr = "*";
+                            _attr = attrib.AttributeName;
                             exportPolicy.Add(_fed, _ent, _obj, _attr);
                         }
-                    }
-                }
-                if (source.Element(f + "interaction") != null)
-                {
-                    IEnumerable<XElement> interactionList = source.Descendants(f + "interaction");
-                    foreach (XElement interactionName in interactionList)
-                    {
-                        _obj = interactionName.Element(f + "interactionClassName").Value;
+                    else
                         exportPolicy.Add(_fed, _ent, _obj, "*");
-                    }
+                }
+                foreach (HlaInteraction inter in source.Interactions)
+                {
+                    _obj = inter.InteractionClassName;
+                    exportPolicy.Add(_fed, _ent, _obj, "*");
                 }
             }
-            return exportPolicy.GetRuleSet();
+            return true;
         }
 
         /// <summary>
         /// Determine the import policy
         /// </summary>
         /// <returns>true if no errors</returns>
-        private XDocument _importPolicy()
+        private bool setImportPolicy()
         {
             // Initialise import policy
             RuleSet importPolicy = new RuleSet("importPolicy");
-            
+
             // Build import policy from the deploy doc
-            IEnumerable<XElement> componentList = deploy.Element(f + "Deploy").Element(f + "system").Elements(f + "component");
-
-            IEnumerable<XElement> importList = null;
-            foreach (XElement component in componentList)
+            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.import).Count != 1)
             {
-                if (component.Attribute("componentType").Value == "Guard")
-                {
-                    importList = component.Descendants(f + "import");
-                    break;
-                }
-            }
-            if (importList == null)
-            {
-                ErrorMsg = "No component defining Guard import policy found";
-                return null;
+                ErrorMsg = "No Import module in the Component specification";
+                return false;
             }
 
-            foreach (XElement source in importList)
-            {
-                string _fed = "*", _ent = "*", _obj, _attr;
+            // Get the import module
+            ModuleImport importPol = (ModuleImport)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.import);
 
-                if (source.Element(f + "object") != null)
-                {
-                    IEnumerable<XElement> objectList = source.Descendants(f + "object");
-                    foreach (XElement objectName in objectList)
+            string _fed = "*", _ent = "*", _obj, _attr;
+
+            foreach (HlaObject obj in importPol.Objects)
+            {
+                _obj = obj.ObjectClassName;
+                if (obj.Attributes.Count > 0)
+                    foreach (HlaAttribute attrib in obj.Attributes)
                     {
-                        _obj = objectName.Element(f + "objectClassName").Value;
-                        IEnumerable<XElement> attributeList = objectName.Descendants(f + "attributeName");
-                        if (attributeList.Count() > 0)
-                        {
-                            foreach (XElement attribute in attributeList)
-                            {
-                                _attr = attribute.Value;
-                                importPolicy.Add(_fed, _ent, _obj, _attr);
-                            }
-                        }
-                        else   // If no attribute defined then all are permitted
-                        {
-                            _attr = "*";
-                            importPolicy.Add(_fed, _ent, _obj, _attr);
-                        }
+                        _attr = attrib.AttributeName;
+                        exportPolicy.Add(_fed, _ent, _obj, _attr);
                     }
-                }
-                if (source.Element(f + "interaction") != null)
-                {
-                    IEnumerable<XElement> interactionList = source.Descendants(f + "interaction");
-                    foreach (XElement interactionName in interactionList)
-                    {
-                        _obj = interactionName.Element(f + "interactionClassName").Value;
-                        importPolicy.Add(_fed, _ent, _obj, "*");
-                    }
-                }
+                else
+                    exportPolicy.Add(_fed, _ent, _obj, "*");
             }
-            return importPolicy.GetRuleSet();
+            foreach (HlaInteraction inter in importPol.Interactions)
+            {
+                _obj = inter.InteractionClassName;
+                exportPolicy.Add(_fed, _ent, _obj, "*");
+            }
+            return true;
         }
     }
 }
