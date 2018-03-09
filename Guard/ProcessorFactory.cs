@@ -36,8 +36,6 @@ namespace Guard_Emulator
                     return new ZmqProcessor(input, output, osp, policy, token);
                 case ModuleOsp.OspProtocol.HPSD_TCP:
                 case ModuleOsp.OspProtocol.WebLVC_TCP:
-                    // 'subscribe' for TCP processor is the (upstream) addr:port the processor listens on
-                    // 'publish' fopr the TCP processor is (downstream) addr:port the process connects to
                     return new TcpProcessor(input, output, osp, policy, token);
                 default:
                     return null;
