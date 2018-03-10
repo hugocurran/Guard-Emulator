@@ -41,5 +41,29 @@ namespace Guard_Emulator
                     return null;
             }
         }
+
+        /// <summary>
+        /// Test interface
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="output"></param>
+        /// <param name="osp"></param>
+        /// <param name="policy"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        internal static Processor Create(string input, string output, ModuleOsp.OspProtocol osp, XElement policy, CancellationToken token)
+        {
+            switch (osp)
+            {
+                case ModuleOsp.OspProtocol.HPSD_ZMQ:
+                case ModuleOsp.OspProtocol.WebLVC_ZMQ:
+                    return new ZmqProcessor(input, output, osp, policy, token);
+                case ModuleOsp.OspProtocol.HPSD_TCP:
+                case ModuleOsp.OspProtocol.WebLVC_TCP:
+                    return new TcpProcessor(input, output, osp, policy, token);
+                default:
+                    return null;
+            }
+        }
     }
 }

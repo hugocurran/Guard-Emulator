@@ -54,20 +54,20 @@ namespace Guard_Emulator
                 }
 
                 // The only system types that have a guard are HTG and MTG
-                if ((deploy.Systems[0].SystemType != Enums.PatternType.htg) || (deploy.Systems[0].SystemType != Enums.PatternType.mtg))
+                if ((deploy.Systems[0].SystemType != Enums.PatternType.htg) && (deploy.Systems[0].SystemType != Enums.PatternType.mtg))
                 {
                     ErrorMsg = "Invalid Deploy document: System type does not include a guard";
                     return false;
                 }
 
                 // To be useful there must be a single Guard component
-                if (deploy.Systems[0].Components.ToLookup(x => x.ComponentType == Enums.ComponentType.guard).Count != 1)
+                List<Component> components = deploy.Systems[0].Components.FindAll(x => x.ComponentType == Enums.ComponentType.guard);
+                if (components.Count !=1)
                 {
                     ErrorMsg = "Too many/few Guard specifications in the Deploy document";
                     return false;
                 }
-
-                component = deploy.Systems[0].Components.Find(x => x.ComponentType == Enums.ComponentType.guard);
+                component = components[0];
             }
             catch (FileNotFoundException e)
             {
@@ -119,13 +119,14 @@ namespace Guard_Emulator
             // Extract Logger settings from the deploy doc
 
             // There should only be one host module
-            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.host).Count != 1)
+            List<IModule> hostList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.host);
+            if (hostList.Count != 1)
             {
                 ErrorMsg = "Too many/few Host modules in the Component specification";
                 return false;
             }
             // get the host module
-            ModuleHost host = (ModuleHost)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.host);
+            ModuleHost host = (ModuleHost)hostList[0];
 
             // Extract the FIRST logging entry (dunno what happens if we have 2+ loggers)
             // Check logger is defined
@@ -145,19 +146,19 @@ namespace Guard_Emulator
         private bool SetOsp()
         {
             // We require two OSP modules to be defined
-            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.osp).Count != 2)
+            List<ModuleOsp> ospList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.osp).Cast<ModuleOsp>().ToList();
+            if (ospList.Count != 2)
             {
                 ErrorMsg = "Too many/few OSP modules in the Component specification";
                 return false;
             }
-            List<ModuleOsp> ospList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.osp).Cast<ModuleOsp>().ToList();
-            ModuleOsp export = ospList.Find(x => x.Path.ToUpper() == "EXPORTPATH");
+            export = ospList.Find(x => x.Path.ToUpper() == "EXPORTPATH");
             if (export == null)
             {
                 ErrorMsg = "OSP: Export path not defined";
                 return false;
             }
-            ModuleOsp import = ospList.Find(x => x.Path.ToUpper() == "IMPORTPATH");
+            import = ospList.Find(x => x.Path.ToUpper() == "IMPORTPATH");
             if (import == null)
             {
                 ErrorMsg = "OSP: Import path not defined";
@@ -185,17 +186,18 @@ namespace Guard_Emulator
         private bool setExportPolicy()
         {
             // Initialise export policy
-            RuleSet exportPolicy = new RuleSet("exportPolicy");
+            exportPolicy = new RuleSet("exportPolicy");
 
             // Build export policy from the deploy doc
-            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.export).Count != 1)
+            List<IModule> exportList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.export);
+            if (exportList.Count != 1)
             {
                 ErrorMsg = "No Export module in the Component specification";
                 return false;
             }
-
+            ModuleExport exportPol = (ModuleExport)exportList[0];
             // Get the export module
-            ModuleExport exportPol = (ModuleExport)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.export);
+
 
             foreach (Source source in exportPol.Sources)
             {
@@ -208,7 +210,7 @@ namespace Guard_Emulator
                         _ent = "*";
                         break;
                     case Source.Type.Entity:
-                        _fed = source.FederateName ?? "*";
+                        _fed = (source.FederateName == "") ? "*" : source.FederateName;
                         _ent = source.EntityId;
                         break;
                     default:
@@ -243,17 +245,16 @@ namespace Guard_Emulator
         private bool setImportPolicy()
         {
             // Initialise import policy
-            RuleSet importPolicy = new RuleSet("importPolicy");
+            importPolicy = new RuleSet("importPolicy");
 
-            // Build import policy from the deploy doc
-            if (component.Modules.ToLookup(x => x.GetModuleType() == Enums.ModuleType.import).Count != 1)
+            // Build export policy from the deploy doc
+            List<IModule> importList = component.Modules.FindAll(x => x.GetModuleType() == Enums.ModuleType.import);
+            if (importList.Count != 1)
             {
                 ErrorMsg = "No Import module in the Component specification";
                 return false;
             }
-
-            // Get the import module
-            ModuleImport importPol = (ModuleImport)component.Modules.Find(x => x.GetModuleType() == Enums.ModuleType.import);
+            ModuleImport importPol = (ModuleImport)importList[0];
 
             string _fed = "*", _ent = "*", _obj, _attr;
 
@@ -264,15 +265,15 @@ namespace Guard_Emulator
                     foreach (HlaAttribute attrib in obj.Attributes)
                     {
                         _attr = attrib.AttributeName;
-                        exportPolicy.Add(_fed, _ent, _obj, _attr);
+                        importPolicy.Add(_fed, _ent, _obj, _attr);
                     }
                 else
-                    exportPolicy.Add(_fed, _ent, _obj, "*");
+                    importPolicy.Add(_fed, _ent, _obj, "*");
             }
             foreach (HlaInteraction inter in importPol.Interactions)
             {
                 _obj = inter.InteractionClassName;
-                exportPolicy.Add(_fed, _ent, _obj, "*");
+                importPolicy.Add(_fed, _ent, _obj, "*");
             }
             return true;
         }

@@ -9,7 +9,7 @@ using System.Threading;
 using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
-
+using FPDL.Deploy;
 
 namespace UnitTests
 {
@@ -19,7 +19,7 @@ namespace UnitTests
         // All testing done on loopback if
         string subscriber = "127.0.0.1:5556";
         string publisher = "127.0.0.1:5555";
-        OspProtocol protocol;
+        ModuleOsp.OspProtocol protocol;
 
         // Sequence number for messages
         // Note that the test harness consumes seq 0 and 1
@@ -28,8 +28,8 @@ namespace UnitTests
         [TestMethod]
         public void ProcessorStatusMessage_HPSD()
         {
-            protocol = OspProtocol.HPSD_ZMQ;
-            XDocument testPolicy = policy();
+            protocol = ModuleOsp.OspProtocol.HPSD_ZMQ;
+            XElement testPolicy = policy();
             
             Assert.IsTrue(processorDriver(testPolicy, statusMessage_HPSD));
         }
@@ -57,7 +57,7 @@ namespace UnitTests
         #region Test Harness - processor driver
 
         // Test harness
-        public bool processorDriver(XDocument policy, Func<int, byte[]> mesgType)
+        public bool processorDriver(XElement policy, Func<int, byte[]> mesgType)
         {
             bool success = false;
             // Processor must run in its own cancellable task
@@ -149,15 +149,14 @@ namespace UnitTests
                  new XElement("objectName", "*"),
                  new XElement("attributeName", "*"))
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
             number++;
             return testPolicy;
         }
 
-        XDocument policy()
+        XElement policy()
         {
-            XDocument testPolicy = new XDocument();
-            testPolicy.Add(new XElement("exportPolicy"));
+            XElement testPolicy = new XElement("exportPolicy");
             int number = 1;
             XElement rule;
             rule =
@@ -168,7 +167,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
             number++;
 
             rule =
@@ -179,7 +178,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
             number++;
 
             rule =
@@ -190,7 +189,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.WeaponFire"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
             number++;
 
             rule =
@@ -201,7 +200,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.Detonation"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
             number++;
 
             return testPolicy;

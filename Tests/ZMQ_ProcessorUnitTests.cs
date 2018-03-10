@@ -25,7 +25,7 @@ namespace UnitTests
         public void ObjectCreatePolicyProcessing1()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             // Create an internal message for an Object Update
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -55,7 +55,7 @@ namespace UnitTests
         public void ObjectCreatePolicyProcessing2()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -65,7 +65,7 @@ namespace UnitTests
                     new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                     new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Object Update
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -95,7 +95,7 @@ namespace UnitTests
         public void ObjectCreatePolicyProcessing3()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -105,7 +105,7 @@ namespace UnitTests
                     new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                     new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             rule =
                 new XElement("rule",
@@ -115,7 +115,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "*")
 );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Object Update
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -145,7 +145,7 @@ namespace UnitTests
         public void ObjectUpdatePolicyProcessing1()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -155,7 +155,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             rule =
                 new XElement("rule",
@@ -165,7 +165,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Object Update
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -196,7 +196,7 @@ namespace UnitTests
         public void ObjectUpdatePolicyProcessing2()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -206,7 +206,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             rule =
                 new XElement("rule",
@@ -216,7 +216,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAobjectRoot.BaseEntity.PhysicalEntity.Aircraft"),
                 new XElement("attributeName", "Marking")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Object Update
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -247,7 +247,7 @@ namespace UnitTests
         public void InteractionPolicyProcessing1()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -257,7 +257,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.WeaponFire"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             rule =
                 new XElement("rule",
@@ -267,7 +267,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.Detonation"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Interaction
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -297,7 +297,7 @@ namespace UnitTests
         public void InteractionPolicyProcessing2()
         {
             // Create a matching policy file
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             XElement rule =
                 new XElement("rule",
@@ -307,7 +307,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.WeaponFire"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             rule =
                 new XElement("rule",
@@ -317,7 +317,7 @@ namespace UnitTests
                 new XElement("objectName", "HLAinteractionRoot.Detonation"),
                 new XElement("attributeName", "*")
             );
-            testPolicy.Element("exportPolicy").Add(rule);
+            testPolicy.Add(rule);
 
             // Create an internal message for an Interaction
             long timeStamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();

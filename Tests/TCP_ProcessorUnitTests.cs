@@ -13,7 +13,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using Tests;
-
+using FPDL.Deploy;
 
 namespace UnitTests
 {
@@ -29,12 +29,12 @@ namespace UnitTests
         [TestMethod]
         public void ProcessorBasicTCPSocketToSocketCopy()
         {
-            XDocument testPolicy = CreateEmptyPolicy();
+            XElement testPolicy = CreateEmptyPolicy();
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
+            ModuleOsp.OspProtocol protocol = ModuleOsp.OspProtocol.HPSD_TCP;
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
@@ -98,12 +98,12 @@ namespace UnitTests
         [TestMethod]
         public void TcpProcessorUpstreamFailRecover()
         {
-            XDocument testPolicy = CreateEmptyPolicy();
+            XElement testPolicy = CreateEmptyPolicy();
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
+            ModuleOsp.OspProtocol protocol = ModuleOsp.OspProtocol.HPSD_TCP;
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
@@ -202,12 +202,12 @@ namespace UnitTests
         [TestMethod]
         public void TcpProcessorDownstreamFailRecover()
         {
-            XDocument testPolicy = CreateEmptyPolicy();
+            XElement testPolicy = CreateEmptyPolicy();
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
+            ModuleOsp.OspProtocol protocol = ModuleOsp.OspProtocol.HPSD_TCP;
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;
@@ -331,12 +331,10 @@ namespace UnitTests
             }
         }
 
-        private XDocument CreateEmptyPolicy()
+        private XElement CreateEmptyPolicy()
         {
             // Create an empty policy file
-            XDocument testPolicy = new XDocument();
-            XElement emptyPolicy =
-                new XElement("exportPolicy",
+            XElement testPolicy = new XElement("exportPolicy",
                     new XElement("rule",
                         new XAttribute("ruleNumber", "1"),
                         new XElement("federate", "*"),
@@ -344,7 +342,6 @@ namespace UnitTests
                         new XElement("objectName", "*"),
                         new XElement("attributeName", "*"))
             );
-            testPolicy.Add(emptyPolicy);
             return testPolicy;
         }
 

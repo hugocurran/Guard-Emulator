@@ -330,9 +330,6 @@
 			</interface>
 			<host>
 				<hostName>Guard</hostName>
-				<logging>
-				<server port="514" protocol="syslog" transport="UDP">127.0.0.1</server>
-				</logging>
 			</host>
 			<osp>
 				<path>exportPath</path>

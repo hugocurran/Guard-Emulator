@@ -10,7 +10,7 @@ using Guard_Emulator;
 using Google.Protobuf;
 using System.Xml.Linq;
 using Tests;
-
+using FPDL.Deploy;
 
 namespace UnitTests
 {
@@ -26,8 +26,8 @@ namespace UnitTests
         [TestMethod]
         public void HPSD_ZMQ_ProcessorBasicSocketToSocketCopy()
         {
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
-            ZMQ_MessageTestLoop(OspProtocol.HPSD_ZMQ, testPolicy, Harness.HPSD_StatusMessage, Harness.HPSD_StatusMessage);
+            XElement testPolicy = Harness.CreateEmptyPolicy();
+            ZMQ_MessageTestLoop(ModuleOsp.OspProtocol.HPSD_ZMQ, testPolicy, Harness.HPSD_StatusMessage, Harness.HPSD_StatusMessage);
         }
 
         #endregion
@@ -37,20 +37,20 @@ namespace UnitTests
         [TestMethod]
         public void WebLVC_ZMQ_ProcessorBasicSocketToSocketCopy()
         {
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
-            ZMQ_MessageTestLoop(OspProtocol.WebLVC_ZMQ, testPolicy, Harness.WebLVC_StatusMessage, Harness.WebLVC_StatusMessage);
+            XElement testPolicy = Harness.CreateEmptyPolicy();
+            ZMQ_MessageTestLoop(ModuleOsp.OspProtocol.WebLVC_ZMQ, testPolicy, Harness.WebLVC_StatusMessage, Harness.WebLVC_StatusMessage);
         }
 
         [TestMethod]
         public void WebLVC_ZMQ_ProcessorUpdate()
         {
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
-            ZMQ_MessageTestLoop(OspProtocol.WebLVC_ZMQ, testPolicy, Harness.WebLVC_StatusMessage, Harness.WebLVC_UpdateMessage);
+            XElement testPolicy = Harness.CreateEmptyPolicy();
+            ZMQ_MessageTestLoop(ModuleOsp.OspProtocol.WebLVC_ZMQ, testPolicy, Harness.WebLVC_StatusMessage, Harness.WebLVC_UpdateMessage);
         }
 
         #endregion
 
-        public void ZMQ_MessageTestLoop(OspProtocol protocol, XDocument policy, Func<int, byte[]> statusMsg, Func<int, byte[]> testMsg)
+        public void ZMQ_MessageTestLoop(ModuleOsp.OspProtocol protocol, XElement policy, Func<int, byte[]> statusMsg, Func<int, byte[]> testMsg)
         {
             // We need an initialised logger object
             Logger logger = Logger.Instance;

@@ -13,7 +13,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.IO;
 using Tests;
-
+using FPDL.Deploy;
 
 namespace UnitTests
 {
@@ -30,12 +30,12 @@ namespace UnitTests
         [TestMethod]
         public void HPSD_TCP_ProcessorBasicSocketToSocketCopy()
         {
-            XDocument testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = Harness.CreateEmptyPolicy();
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
-            OspProtocol protocol = OspProtocol.HPSD_TCP;
+            ModuleOsp.OspProtocol protocol = ModuleOsp.OspProtocol.HPSD_TCP;
 
             // We need an initialised logger object
             Logger logger = Logger.Instance;

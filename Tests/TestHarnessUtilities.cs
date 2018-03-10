@@ -15,10 +15,9 @@ namespace Tests
         /// Policy that permits anything
         /// </summary>
         /// <returns></returns>
-        public static XDocument CreateEmptyPolicy()
+        public static XElement CreateEmptyPolicy()
         {
             // Create an empty policy file
-            XDocument testPolicy = new XDocument();
             XElement emptyPolicy =
                 new XElement("exportPolicy",
                     new XElement("rule",
@@ -28,8 +27,7 @@ namespace Tests
                         new XElement("objectName", "*"),
                         new XElement("attributeName", "*"))
             );
-            testPolicy.Add(emptyPolicy);
-            return testPolicy;
+            return emptyPolicy;
         }
 
         /// <summary>

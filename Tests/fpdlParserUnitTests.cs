@@ -2,6 +2,7 @@
 using Guard_Emulator;
 using System.Xml.Linq;
 using System.IO;
+using FPDL.Deploy;
 
 namespace UnitTests
 {
@@ -55,9 +56,9 @@ namespace UnitTests
             {
                 Assert.Fail(parser.ErrorMsg);
             }
-            Assert.AreEqual("127.0.0.1:5556", parser.ExportIn);
-            Assert.AreEqual(OspProtocol.HPSD_ZMQ, parser.Protocol);
-            Assert.AreEqual("10.10.10.12", parser.SyslogServerIp);
+            Assert.AreEqual("40.40.40.193:8100", parser.ExportIn);
+            Assert.AreEqual(ModuleOsp.OspProtocol.HPSD_TCP, parser.Protocol);
+            Assert.AreEqual("127.0.0.1", parser.SyslogServerIp);
         }
 
         [TestMethod]
@@ -70,10 +71,10 @@ namespace UnitTests
                 Assert.Fail(parser.ErrorMsg);
             }
 
-            XDocument policy = parser.ExportPolicy;
+            XElement policy = parser.ExportPolicy;
             Assert.IsNotNull(policy);
 
-            Assert.AreEqual("1", policy.Element("exportPolicy").Element("rule").Attribute("ruleNumber").Value);
+            Assert.AreEqual("1", policy.Element("rule").Attribute("ruleNumber").Value);
         }
 
         [TestMethod]
@@ -86,10 +87,10 @@ namespace UnitTests
                 Assert.Fail(parser.ErrorMsg);
             }
 
-            XDocument policy = parser.ImportPolicy;
+            XElement policy = parser.ImportPolicy;
             Assert.IsNotNull(policy);
 
-            Assert.AreEqual("1", policy.Element("importPolicy").Element("rule").Attribute("ruleNumber").Value);
+            Assert.AreEqual("1", policy.Element("rule").Attribute("ruleNumber").Value);
         }
     }
 }

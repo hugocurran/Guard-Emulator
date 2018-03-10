@@ -18,4 +18,10 @@
     <ProjectReference Include="..\Guard\Guard.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="FPDL">
+      <HintPath>..\..\FPDL Toolkit\FPDL\bin\Debug\FPDL.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>
