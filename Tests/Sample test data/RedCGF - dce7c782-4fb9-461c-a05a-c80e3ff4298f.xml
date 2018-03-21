@@ -1,0 +1,1113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Deploy xmlns="http://www.niteworks.net/fpdl" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.niteworks.net/fpdl file:///C:/Users/peter/source/repos/FPDL-Schema/FPDL-ver0.3.xsd">
+	<configMgmt>
+		<securityOwner>UK</securityOwner>
+		<securityClassification>Official</securityClassification>
+		<currentVersion>1.0</currentVersion>
+		<description>Initial Version</description>
+		<created>
+			<date>2018-03-08</date>
+			<author>James</author>
+			<initialVersion>1.0</initialVersion>
+		</created>
+		<docReference>1455cdff-5d82-429f-b04a-45b16bdaddbf</docReference>
+		<changed>
+			<date>2018-03-08</date>
+			<author>James</author>
+			<newVersion>1.0</newVersion>
+			<prevDocReference>1455cdff-5d82-429f-b04a-45b16bdaddbf</prevDocReference>
+			<changeNotes>Initial Version</changeNotes>
+		</changed>
+	</configMgmt>
+	<designReference>dce7c782-4fb9-461c-a05a-c80e3ff4298f</designReference>
+	<system systemType="htg">
+		<pattern patternReference="8c65c7b2-bbec-45a3-9784-0dd2b985786d">Pitch-Waymont HTG</pattern>
+		<federateName>RedCGF</federateName>
+		<component componentID="917b46e6-fca7-4c90-b60f-fa81a5847da3" componentType="proxy" componentName="High proxy">
+			<interface>
+				<interfaceName>CSS Federation</interfaceName>
+				<ipAddress netPrefix="24">1.1.1.1</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>OSP</interfaceName>
+				<ipAddress netPrefix="24">40.40.40.31</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>Management</interfaceName>
+				<ipAddress netPrefix="24">10.10.10.31</ipAddress>
+			</interface>
+			<host>
+				<hostName>NW31</hostName>
+			</host>
+			<federation>
+				<federationName>CSS</federationName>
+				<federateName>TYP</federateName>
+				<interfaceName>CSS Federation</interfaceName>
+				<rti>
+					<crcAddress addressType="ipAddress">1.1.1.1</crcAddress>
+					<crcPortNumber>8989</crcPortNumber>
+					<hlaSpec>HLA Evolved</hlaSpec>
+					<fom>
+						<uri>RPR_FOM_v2.0_1516-2010.xml</uri>
+						<uri>CBRN_v1.1.9.xml</uri>
+						<uri>MRM_v1.1.1.xml</uri>
+						<uri>NETN-Aggregate_v1.0.4.xml</uri>
+						<uri>NETN-Base_v1.0.2.xml</uri>
+						<uri>NETN-HCBML_v1.1.1.xml</uri>
+						<uri>NETN-LBML_v1.1.0.xm</uri>
+						<uri>NETN-Physical_v1.1.2.xml</uri>
+						<uri>NETN-Repair_v1.2.1.xml</uri>
+						<uri>NETN-SCP-Base_v1.1.3.xml</uri>
+						<uri>NETN-Storage_v1.2.2.xml</uri>
+						<uri>NETN-Supply_v1.1.2.xml</uri>
+						<uri>NETN-Transport_v1.1.2.xml</uri>
+						<uri>TMR_v1.1.3.xml</uri>
+						<uri>NETN-Emitter_v1.0.0.xml</uri>
+						<uri>NETN-Weapons_v1.0.0.xml</uri>
+					</fom>
+				</rti>
+			</federation>
+			<osp>
+				<path>exportPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<outputPort>40.40.40.193:8100</outputPort>
+			</osp>
+			<osp>
+				<path>importPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<inputPort>40.40.40.31:9001</inputPort>
+			</osp>
+			<export>
+				<interfaceName>CSS Federation</interfaceName>
+				<source filterSource="false">
+					<federateSource>MixedCGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AlternateEntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+						<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+						<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+						<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+						<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+						<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+						<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AfterburnerOn</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation.NETN_MunitionDetonation</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+					</interaction>
+				</source>
+			</export>
+			<extension>
+				<vendorName>Pitch Technologies</vendorName>
+				<parameter>
+					<name>configurationType</name>
+					<value>PitchSpecific</value>
+				</parameter>
+				<parameter>
+					<name>create</name>
+					<value>RPR_FOM_v2.0_1516-2010.xml</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.AmphibiousVehicle.NETN_AmphibiousVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SubmersibleVessel.NETN_SubmersibleVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.MultiDomainPlatform.NETN_MultiDomainPlatform</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Spacecraft.NETN_Spacecraft</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>insanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.NonHuman.NETN_NonHuman</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</name>
+					<value>UUID</value>
+				</parameter>
+			</extension>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interfaceName>OSP</interfaceName>
+			</import>
+		</component>
+		<component componentID="f78d40ed-e1c3-4c5f-8288-1f5356fa0845" componentType="guard" componentName="Guard">
+			<interface>
+				<interfaceName>High</interfaceName>
+				<ipAddress netPrefix="24">40.40.40.193</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>Low</interfaceName>
+				<ipAddress netPrefix="24">50.50.50.193</ipAddress>
+			</interface>
+			<host>
+				<hostName>Guard</hostName>
+			</host>
+			<osp>
+				<path>exportPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<inputPort>40.40.40.193:8100</inputPort>
+				<outputPort>50.50.50.41:9000</outputPort>
+			</osp>
+			<osp>
+				<path>importPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<inputPort>50.50.50.193:8101</inputPort>
+				<outputPort>40.40.40.31:9001</outputPort>
+			</osp>
+			<export>
+				<interfaceName>High</interfaceName>
+				<source filterSource="false">
+					<federateSource>AFS-1</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AlternateEntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+						<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+						<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+						<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+						<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+						<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+						<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AfterburnerOn</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation.NETN_MunitionDetonation</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+					</interaction>
+				</source>
+				<source filterSource="false">
+					<federateSource>RedCGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AlternateEntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+						<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+						<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+						<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+						<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+						<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+						<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AfterburnerOn</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation.NETN_MunitionDetonation</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+					</interaction>
+				</source>
+			</export>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interfaceName>Low</interfaceName>
+			</import>
+		</component>
+		<component componentID="cb1593c4-d67f-4e1c-966d-e11999cb8134" componentType="proxy" componentName="Low proxy">
+			<interface>
+				<interfaceName>GBAD Federation</interfaceName>
+				<ipAddress netPrefix="24">4.4.4.4</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>OSP</interfaceName>
+				<ipAddress netPrefix="24">50.50.50.41</ipAddress>
+			</interface>
+			<interface>
+				<interfaceName>Management</interfaceName>
+				<ipAddress netPrefix="24">10.10.10.41</ipAddress>
+			</interface>
+			<host>
+				<hostName>NW31</hostName>
+			</host>
+			<federation>
+				<federationName>GBAD</federationName>
+				<federateName>CSS</federateName>
+				<interfaceName>GBAD Federation</interfaceName>
+				<rti>
+					<crcAddress addressType="ipAddress">4.4.4.4</crcAddress>
+					<crcPortNumber>8989</crcPortNumber>
+					<hlaSpec>HLA Evolved</hlaSpec>
+					<fom>
+						<uri>RPR_FOM_v2.0_1516-2010.xml</uri>
+						<uri>CBRN_v1.1.9.xml</uri>
+						<uri>MRM_v1.1.1.xml</uri>
+						<uri>NETN-Aggregate_v1.0.4.xml</uri>
+						<uri>NETN-Base_v1.0.2.xml</uri>
+						<uri>NETN-HCBML_v1.1.1.xml</uri>
+						<uri>NETN-LBML_v1.1.0.xm</uri>
+						<uri>NETN-Physical_v1.1.2.xml</uri>
+						<uri>NETN-Repair_v1.2.1.xml</uri>
+						<uri>NETN-SCP-Base_v1.1.3.xml</uri>
+						<uri>NETN-Storage_v1.2.2.xml</uri>
+						<uri>NETN-Supply_v1.1.2.xml</uri>
+						<uri>NETN-Transport_v1.1.2.xml</uri>
+						<uri>TMR_v1.1.3.xml</uri>
+						<uri>NETN-Emitter_v1.0.0.xml</uri>
+						<uri>NETN-Weapons_v1.0.0.xml</uri>
+					</fom>
+				</rti>
+			</federation>
+			<osp>
+				<path>exportPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<inputPort>50.50.50.41:9000</inputPort>
+			</osp>
+			<osp>
+				<path>importPath</path>
+				<protocol>HPSD_TCP</protocol>
+				<outputPort>50.50.50.193:8101</outputPort>
+			</osp>
+			<extension>
+				<vendorName>Pitch Technologies</vendorName>
+				<parameter>
+					<name>configurationType</name>
+					<value>PitchSpecific</value>
+				</parameter>
+				<parameter>
+					<name>create</name>
+					<value>RPR_FOM_v2.0_1516-2010.xml</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.AmphibiousVehicle.NETN_AmphibiousVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SubmersibleVessel.NETN_SubmersibleVehicle</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.MultiDomainPlatform.NETN_MultiDomainPlatform</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Spacecraft.NETN_Spacecraft</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>insanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.NonHuman.NETN_NonHuman</name>
+					<value>UUID</value>
+				</parameter>
+				<parameter>
+					<name>instanceIdAttribute:HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</name>
+					<value>UUID</value>
+				</parameter>
+			</extension>
+			<import>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+					<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Spatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsPartOf</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativeSpatial</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+					<attributeName dataType="string" defaultValue="0">DamageState</attributeName>
+					<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+					<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+					<attributeName dataType="string" defaultValue="0">InfraredSignatureIndex</attributeName>
+					<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+					<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+					<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+					<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">BrakeLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">HeadLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">InteriorLightsOn</attributeName>
+					<attributeName dataType="string" defaultValue="0">LauncherRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectUuid</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+					<attributeName dataType="string" defaultValue="0">AntennaRaised</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem</objectClassName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+					<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">HostObjectIdentifier</attributeName>
+					<attributeName dataType="string" defaultValue="0">RelativePosition</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.EmbeddedSystem.EmitterSystem.NETN_EmitterSystem</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Sensor</objectClassName>
+				</object>
+				<object>
+					<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+				</object>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+				</interaction>
+				<interaction>
+					<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+				</interaction>
+				<interfaceName>GBAD Federation</interfaceName>
+			</import>
+			<export>
+				<interfaceName>OSP</interfaceName>
+				<source filterSource="false">
+					<federateSource>MixedCGF</federateSource>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">EntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EntityIdentifier</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AlternateEntityType</attributeName>
+						<attributeName dataType="string" defaultValue="0">ForceIdentifier</attributeName>
+						<attributeName dataType="string" defaultValue="0">Marking</attributeName>
+						<attributeName dataType="string" defaultValue="0">ArticulatedParametersArray</attributeName>
+						<attributeName dataType="string" defaultValue="0">CamouflageType</attributeName>
+						<attributeName dataType="string" defaultValue="0">EngineSmokeOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">FlamesPresent</attributeName>
+						<attributeName dataType="string" defaultValue="0">Immobilized</attributeName>
+						<attributeName dataType="string" defaultValue="0">IsConcealed</attributeName>
+						<attributeName dataType="string" defaultValue="0">PowerPlantOn</attributeName>
+						<attributeName dataType="string" defaultValue="0">TentDeployed</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.Aircraft.NETN_Aircraft</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.GroundVehicle.NETN_GroundVehicle</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform.SurfaceVessel.NETN_SurfaceVessel</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">EmbeddedUnitList</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Lifeform.Human.NETN_Human</objectClassName>
+						<attributeName dataType="string" defaultValue="0">Callsign</attributeName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Platform</objectClassName>
+						<attributeName dataType="string" defaultValue="0">AfterburnerOn</attributeName>
+					</object>
+					<object>
+						<objectClassName>HLAobjectRoot.BaseEntity.PhysicalEntity.Munition.NETN_Munition</objectClassName>
+						<attributeName dataType="string" defaultValue="0">UniqueID</attributeName>
+					</object>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation.NETN_MunitionDetonation</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire.NETN_WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.WeaponFire</interactionClassName>
+					</interaction>
+					<interaction>
+						<interactionClassName>HLAinteractionRoot.MunitionDetonation</interactionClassName>
+					</interaction>
+				</source>
+			</export>
+		</component>
+	</system>
+</Deploy>

@@ -55,8 +55,8 @@ namespace UnitTests
         public void ObjectCreatePolicyProcessing2()
         {
             // Create a matching policy file
-            XElement testPolicy = Harness.CreateEmptyPolicy();
-
+            //XElement testPolicy = Harness.CreateEmptyPolicy();
+            XElement testPolicy = new XElement("exportPolicy");
             XElement rule =
                 new XElement("rule",
                     new XAttribute("ruleNumber", "2"),

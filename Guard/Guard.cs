@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Guard_Emulator
 {
@@ -29,6 +30,13 @@ namespace Guard_Emulator
             logger.Initialise(Facility.Local0, fpdlParser.SyslogServerIp, "guard");
 
             logger.Information("Loaded Deploy File: " + args[0] + ". Design Document Reference: " + fpdlParser.DesignDocReference);
+
+            // Output the policy files
+            XDocument pol = new XDocument(fpdlParser.ExportPolicy);
+            pol.Save("exportPolicy.xml");
+            pol = new XDocument(fpdlParser.ImportPolicy);
+            pol.Save("importPolicy.xml");
+            Console.WriteLine("Policy files output");
 
             // Processor must run in its own cancellable task
             CancellationTokenSource tokenSource = new CancellationTokenSource();

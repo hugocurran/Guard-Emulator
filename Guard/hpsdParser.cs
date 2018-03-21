@@ -34,14 +34,15 @@ namespace Guard_Emulator
                     parsedMessage.Type = MessageType.ObjectCreate;
                     parsedMessage.Federate = message.ObjectCreate.ProducingFederate;
                     parsedMessage.EntityID = message.ObjectCreate.InstanceId;
-                    parsedMessage.ObjectName = message.ObjectCreate.ObjectClassName;
+                    // HPSD omits the HLAobjectRoot
+                    parsedMessage.ObjectName = "HLAobjectRoot." + message.ObjectCreate.ObjectClassName;
                     break;
 
                 case HpsdMessage.Types.MessageType.ObjectUpdate:
                     parsedMessage.Type = MessageType.ObjectUpdate;
                     parsedMessage.Federate = message.ObjectUpdate.ProducingFederate;
                     parsedMessage.EntityID = message.ObjectUpdate.InstanceId;
-                    parsedMessage.ObjectName = message.ObjectUpdate.ObjectClassName;
+                    parsedMessage.ObjectName = "HLAobjectRoot." + message.ObjectUpdate.ObjectClassName;
                     foreach (var attrib in message.ObjectUpdate.Attributes)
                     {
                         parsedMessage.Attribute.Add(attrib.Name);
@@ -52,14 +53,14 @@ namespace Guard_Emulator
                     parsedMessage.Type = MessageType.ObjectDelete;
                     parsedMessage.Federate = message.ObjectDelete.ProducingFederate;
                     parsedMessage.EntityID = message.ObjectDelete.InstanceId;
-                    parsedMessage.ObjectName = message.ObjectDelete.ObjectClassName;
+                    parsedMessage.ObjectName = "HLAobjectRoot." + message.ObjectDelete.ObjectClassName;
                     break;
 
                 case HpsdMessage.Types.MessageType.Interaction:
                     parsedMessage.Type = MessageType.Interaction;
                     parsedMessage.Federate = message.Interaction.ProducingFederate;
                     //parsedMessage.EntityID = message.Interaction.InstanceId;
-                    parsedMessage.InteractionName = message.Interaction.InteractionClassName;
+                    parsedMessage.InteractionName = "HLAinteractionRoot." + message.Interaction.InteractionClassName;
                     break;
             }
             return parsedMessage;

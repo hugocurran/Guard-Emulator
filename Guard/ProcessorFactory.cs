@@ -20,11 +20,13 @@ namespace Guard_Emulator
                     policy = deploy.ExportPolicy;
                     input = deploy.ExportIn;
                     output = deploy.ExportOut;
+                    osp = deploy.Protocol;
                     break;
                 case "Import":
                     policy = deploy.ImportPolicy;
                     input = deploy.ImportIn;
                     output = deploy.ImportOut;
+                    osp = deploy.Protocol;
                     break;
                 default:
                     throw new ApplicationException("Path variable incorrectly set");
